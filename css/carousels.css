@@ -1,0 +1,189 @@
+/* =========================
+   CARROSSEL — Destaques do restaurante
+   ========================= */
+.dish-carousel{ margin-top: 14px; position: relative; }
+
+.dish-carousel__viewport{
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(159,154,214,.22);
+  background: rgba(255,255,255,.05);
+  box-shadow: var(--shadow-soft);
+}
+.dish-carousel__track{
+  display: flex;
+  width: 100%;
+  transform: translate3d(0,0,0);
+  transition: transform .35s ease;
+  will-change: transform;
+}
+.dish-carousel__track.is-dragging{ transition:none; cursor: grabbing; }
+
+.dish-carousel__slide{ min-width: 100%; margin: 0; position: relative; }
+.dish-carousel__slide img{
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+}
+.dish-carousel__slide figcaption{
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(11,3,127,.28);
+  border: 1px solid rgba(159,154,214,.22);
+  backdrop-filter: blur(8px);
+}
+.dish-carousel__slide figcaption strong{ display:block; font-size:14px; color: rgba(255,255,255,.95); }
+.dish-carousel__slide figcaption span{ display:block; margin-top:3px; font-size:13px; color: rgba(255,255,255,.82); line-height:1.25; }
+
+.dish-carousel__btn{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(159,154,214,.25);
+  background: rgba(17,4,164,.22);
+  color: rgba(255,255,255,.92);
+  font-size: 22px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.dish-carousel__btn:hover{
+  transform: translateY(-50%) scale(1.03);
+  background: rgba(17,4,164,.32);
+}
+.dish-carousel__btn.prev{ left: 10px; }
+.dish-carousel__btn.next{ right: 10px; }
+
+.dish-carousel__dots{
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.dish-carousel__dot{
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255,255,255,.28);
+  cursor: pointer;
+}
+.dish-carousel__dot.is-active{ background: rgba(255,255,255,.80); }
+
+
+/* =========================
+   CARROSSEL — Programação (flyers Seg–Sáb)
+   ========================= */
+.flyer-carousel{ margin-top: 16px; position: relative; }
+
+.flyer-carousel__viewport{
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid rgba(159,154,214,.18);
+  background: rgba(255,255,255,.05);
+  box-shadow: var(--shadow-soft);
+}
+.flyer-carousel__track{
+  display: flex;
+  width: 100%;
+  transform: translate3d(0,0,0);
+  transition: transform .35s ease;
+  will-change: transform;
+}
+.flyer-carousel__track.is-dragging{ transition:none; cursor: grabbing; }
+
+.flyer-carousel__slide{ min-width: 100%; margin: 0; position: relative; }
+.flyer-carousel__slide img{
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  display: block;
+}
+.flyer-carousel__slide figcaption{
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  padding: 12px 14px;
+  border-radius: calc(var(--radius) - 6px);
+  background: rgba(11,3,127,.28);
+  border: 1px solid rgba(159,154,214,.22);
+  backdrop-filter: blur(8px);
+}
+.flyer-carousel__slide figcaption strong{
+  display:block;
+  color: rgba(255,255,255,.95);
+  font-size: 15px;
+  margin-top: 6px;
+}
+.flyer-carousel__slide figcaption span{
+  display:block;
+  color: rgba(255,255,255,.82);
+  font-size: 13px;
+  margin-top: 4px;
+  line-height: 1.25;
+}
+
+.flyer-tag{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(159,154,214,.25);
+  background: rgba(17,4,164,.22);
+  color: rgba(255,255,255,.92);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .6px;
+}
+
+.flyer-carousel__btn{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(159,154,214,.25);
+  background: rgba(17,4,164,.22);
+  color: rgba(255,255,255,.92);
+  font-size: 22px;
+  line-height: 1;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.flyer-carousel__btn:hover{
+  transform: translateY(-50%) scale(1.03);
+  background: rgba(17,4,164,.32);
+}
+.flyer-carousel__btn.prev{ left: 10px; }
+.flyer-carousel__btn.next{ right: 10px; }
+
+.flyer-carousel__dots{
+  display:flex;
+  gap: 8px;
+  justify-content:center;
+  margin-top: 10px;
+}
+.flyer-carousel__dot{
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border:0;
+  background: rgba(255,255,255,.28);
+  cursor:pointer;
+}
+.flyer-carousel__dot.is-active{ background: rgba(255,255,255,.80); }

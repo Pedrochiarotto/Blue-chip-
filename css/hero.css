@@ -1,0 +1,138 @@
+/* HERO */
+.hero{
+  position: relative;
+  padding: 0;
+  isolation: isolate;
+}
+
+/* Banner (imagem inteira sem cortar) + overlay leve pra legibilidade */
+.hero::before{
+  content:"";
+  display:block;
+  width: 100%;
+  aspect-ratio: var(--hero-aspect);
+  background-image:
+    linear-gradient(180deg, rgba(5,5,27,.15) 0%, rgba(5,5,27,.85) 100%),
+    var(--hero-bg);
+  background-size: cover, contain;
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, center;
+  border-bottom: 1px solid rgba(159,154,214,.18);
+}
+
+/* espaçamento entre banner e conteúdo */
+.hero .container{ padding-top: 22px; }
+
+.hero-grid{
+  display:grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 26px;
+  align-items: stretch;
+}
+.hero-grid > *{ min-width: 0; }
+
+.kicker{
+  display:inline-flex;
+  gap:10px;
+  align-items:center;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(159,154,214,.22);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.88);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .25px;
+  width: fit-content;
+}
+.dot{
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--blue-200);
+  box-shadow: 0 0 0 4px rgba(159,154,214,.18);
+}
+
+h1{
+  margin: 14px 0 12px;
+  font-size: clamp(34px, 4.2vw, 54px);
+  line-height: 1.02;
+  letter-spacing: -0.8px;
+}
+.sub{
+  color: rgba(255,255,255,.82);
+  font-size: 16px;
+  line-height: 1.55;
+  margin: 0 0 18px;
+  max-width: 58ch;
+}
+
+.hero-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+/* Card "Hoje no Blue Chip" */
+.hero-card{
+  border-radius: var(--radius);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(159,154,214,.22);
+  box-shadow: var(--shadow-soft);
+  padding: 18px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap: 16px;
+}
+.hero-card h3{
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: .2px;
+}
+.hero-card p{
+  margin: 8px 0 0;
+  color: rgba(255,255,255,.78);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.mini-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+.mini{
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(17,4,164,.25);
+  border: 1px solid rgba(159,154,214,.22);
+}
+.mini strong{ display:block; font-size: 14px; }
+.mini span{
+  display:block;
+  margin-top: 6px;
+  color: rgba(255,255,255,.78);
+  font-size: 13px;
+  line-height:1.35;
+}
+
+/* Pills / Marquee */
+.pill{
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(159,154,214,.18);
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.76);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Desktop: mostra normal */
+.pill-marquee{ margin-top: 18px; }
+.pill-marquee__track{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+}

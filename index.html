@@ -5,7 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Blue Chip Poker Club</title>
   <meta name="description" content="Blue Chip Poker Club — torneios, cash games, eventos e restaurante. Experiência completa de poker na sua cidade." />
- <link rel="stylesheet" href="style.css">
+ <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/nav.css">
+<link rel="stylesheet" href="css/hero.css">
+<link rel="stylesheet" href="css/sections.css">
+<link rel="stylesheet" href="css/carousels.css">
+<link rel="stylesheet" href="css/responsive.css">
 </head>
 
 <body>
@@ -30,72 +35,88 @@
         </nav>
 
         <div class="nav-cta">
-          <button class="hamburger" id="hamburger" aria-label="Abrir menu">
-       
+          <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">
+              <span></span>
+              <span></span>
+              <span></span>
           </button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- HERO / INTRODUÇÃO -->
   <section class="hero" id="inicio">
-    <div class="container">
-      <div class="hero-grid">
-        <div>
-          <div class="kicker">
-            <span class="dot"></span>
-            <span>Experiência completa de poker na sua cidade</span>
-          </div>
+  <div class="container">
+    <div class="hero-grid">
 
-          <h1>Jogue bem.<br>Sinta o clima.<br>Viva o Blue Chip.</h1>
-          <p class="sub">
-            Torneios, cash games e eventos especiais em um ambiente confortável, seguro e feito para quem ama poker.
-            E para completar: restaurante no local para você jogar e aproveitar sem pressa.
-          </p>
+      <!-- COLUNA ESQUERDA (texto) -->
+      <div class="hero-copy">
+        <div class="kicker">
+          <span class="dot"></span>
+          <span>Experiência completa de poker na sua cidade</span>
+        </div>
 
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#programacao">Ver programação</a>
-            <a class="btn" href="#localizacao">Como chegar</a>
-          </div>
+        <h1>Blue Chip Poker Club:<br>Mais que um jogo,<br>Uma Comunidade.</h1>
 
-          <div class="pill-row">
+        <p class="sub">
+          Torneios, cash games e eventos especiais em um ambiente confortável, seguro e feito para quem ama poker.
+          E para completar: restaurante no local para você jogar e aproveitar sem pressa.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#programacao">Ver programação</a>
+          <a class="btn" href="#localizacao">Como chegar</a>
+        </div>
+
+        <!-- MARQUEE (loop sem scrollbar no mobile) -->
+        <div class="pill-marquee" aria-label="Destaques do clube">
+          <div class="pill-marquee__track">
+            <!-- 1º conjunto -->
             <span class="pill">♣ Torneios regulares</span>
             <span class="pill">♦ Cash diário</span>
             <span class="pill">♥ Eventos especiais</span>
             <span class="pill">♠ Restaurante no local</span>
+
+            <!-- 2º conjunto (duplicado) para loop contínuo -->
+            <span class="pill" aria-hidden="true">♣ Torneios regulares</span>
+            <span class="pill" aria-hidden="true">♦ Cash diário</span>
+            <span class="pill" aria-hidden="true">♥ Eventos especiais</span>
+            <span class="pill" aria-hidden="true">♠ Restaurante no local</span>
           </div>
         </div>
+      </div>
+      <!-- ✅ FECHOU a coluna esquerda -->
 
-        <aside class="hero-card" aria-label="Destaques">
-          <div>
-            <h3>Hoje no Blue Chip</h3>
-            <p>
-              Deixe aqui os destaques do dia (você pode atualizar conforme a agenda).
-            </p>
+      <!-- COLUNA DIREITA (card) -->
+      <aside class="hero-card" aria-label="Destaques">
+        <div>
+          <h3>Hoje no Blue Chip</h3>
+          <p>Deixe aqui os destaques do dia (você pode atualizar conforme a agenda).</p>
 
-            <div class="hero-card mini-grid">
-              <div class="mini">
-                <strong>Torneio</strong>
-                <span>Buy-in: R$ 0,00<br/>Horário: 00:00</span>
-              </div>
-              <div class="mini">
-                <strong>Cash</strong>
-                <span>Blinds: 0/0<br/>A partir: 00:00</span>
-              </div>
+          <div class="mini-grid">
+            <div class="mini">
+              <strong>Torneio</strong>
+              <span>Buy-in: R$ 0,00<br/>Horário: 00:00</span>
             </div>
-
-            <div class="divider"></div>
-            <p style="margin:0;color:rgba(255,255,255,.78);font-size:13px;line-height:1.55;">
-              Dica: você pode colocar aqui “Regulamento / Dress code / Reservas / Regras de entrada”.
-            </p>
+            <div class="mini">
+              <strong>Cash</strong>
+              <span>Blinds: 0/0<br/>A partir: 00:00</span>
+            </div>
           </div>
 
-          <a class="btn" href="#localizacao">Falar com a casa</a>
-        </aside>
-      </div>
+          <div class="divider"></div>
+
+          <p style="margin:0;color:rgba(255,255,255,.78);font-size:13px;line-height:1.55;">
+            Dica: você pode colocar aqui “Regulamento / Dress code / Reservas / Regras de entrada”.
+          </p>
+        </div>
+
+        <a class="btn" href="#localizacao">Falar com a casa</a>
+      </aside>
+
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- TORNEIOS / CASH / EVENTOS -->
   <section id="programacao">
@@ -334,6 +355,8 @@
     </div>
   </footer>
 
-    <script src="js.js"></script>
+  <script src="js/year.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/carousel.js"></script>
 </body>
 </html>

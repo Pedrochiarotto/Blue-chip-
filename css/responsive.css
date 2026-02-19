@@ -1,0 +1,90 @@
+/* RESPONSIVO (geral) */
+@media (max-width: 980px){
+  .hero-grid{ grid-template-columns: 1fr; }
+  .cards{ grid-template-columns: 1fr; }
+  .feature{ grid-template-columns: 1fr; }
+  .contact-grid{ grid-template-columns: 1fr; }
+  .map-wrap{ min-height: 320px; }
+  .brand{ min-width: auto; }
+
+  .nav-links{
+    display:none;
+    position:absolute;
+    left: var(--pad);
+    right: var(--pad);
+    top: 68px;
+    flex-direction:column;
+    gap: 6px;
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(5,5,27,.92);
+    border: 1px solid rgba(159,154,214,.22);
+    box-shadow: var(--shadow);
+  }
+  .nav-links a{ width: 100%; }
+  .hamburger{ display:inline-block; }
+  .nav-links.open{ display:flex; }
+}
+
+/* MOBILE “clean” + marquee loop */
+@media (max-width: 520px){
+  :root{ --pad: 16px; }
+
+  /* HERO: texto mais compacto */
+  h1{ font-size: 32px; line-height: 1.06; }
+
+  .sub{
+    font-size: 14.5px;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    overflow: hidden;
+  }
+
+  /* Botões full width */
+  .hero-actions{
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  .hero-actions .btn{
+    width: 100%;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  /* Mini cards: 1 coluna */
+  .mini-grid{ grid-template-columns: 1fr; gap: 10px; }
+
+  /* Carrosséis menores */
+  .dish-carousel__slide img{ height: 210px; }
+  .flyer-carousel__slide img{ height: 260px; }
+
+  /* CTA das sections full width */
+  .section-head .btn,
+  .section-head .btn-primary{
+    width: 100%;
+  }
+
+  /* Marquee loop SEM scrollbar */
+  .pill-marquee{
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+  .pill-marquee__track{
+    flex-wrap: nowrap;
+    width: max-content;
+    gap: 10px;
+    animation: pillMarquee 28s linear infinite; /* aumente para mais lento */
+    will-change: transform;
+  }
+  @keyframes pillMarquee{
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .pill-marquee__track{ animation: none !important; }
+}
