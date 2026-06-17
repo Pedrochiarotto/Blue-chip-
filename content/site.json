@@ -1,0 +1,49 @@
+{
+  "hero": {
+    "kicker": "Experiência completa de poker na sua cidade",
+    "titleHtml": "Jogue bem.<br>Sinta o clima.<br>Viva o Blue Chip.",
+    "sub": "Torneios, cash games e eventos especiais em um ambiente confortável, seguro e feito para quem ama poker. E para completar: restaurante no local para você jogar e aproveitar sem pressa.",
+    "pills": [
+      "♣ Torneios regulares",
+      "♦ Cash diário",
+      "♥ Eventos especiais",
+      "♠ Restaurante no local"
+    ]
+  },
+  "today": {
+    "title": "Hoje no Blue Chip",
+    "text": "Deixe aqui os destaques do dia (você pode atualizar conforme a agenda).",
+    "autoText": "Confira o flyer do evento programado para hoje.",
+    "cards": [
+      { "label": "Torneio", "detailsHtml": "Buy-in: R$ 0,00<br/>Horário: 00:00" },
+      { "label": "Cash", "detailsHtml": "Blinds: 0/0<br/>A partir: 00:00" }
+    ],
+    "tip": "Dica: você pode colocar aqui “Regulamento / Dress code / Reservas / Regras de entrada”."
+  },
+  "carousels": {
+    "flyers": [
+      {
+        "enabled": true,
+        "image": "/image/uploads/seg.png",
+        "tag": "SEG",
+        "title": "Noite de Cash",
+        "subtitle": "Mesas abertas a partir das 18h",
+        "eventDate": "",
+        "weekdays": ["seg"]
+      },
+      {
+        "enabled": true,
+        "image": "/image/uploads/ter.png",
+        "tag": "TER",
+        "title": "Torneio Regular",
+        "subtitle": "Inscrições 19h • Início 20h",
+        "eventDate": "",
+        "weekdays": ["ter"]
+      }
+    ],
+    "dishes": [
+      { "image": "/image/uploads/burger.jpg", "title": "Hambúrguer artesanal", "subtitle": "Carne suculenta + molho da casa" },
+      { "image": "/image/uploads/porcao.jpg", "title": "Porção premium", "subtitle": "Perfeita para compartilhar" }
+    ]
+  }
+}

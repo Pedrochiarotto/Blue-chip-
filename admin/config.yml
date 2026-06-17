@@ -1,0 +1,84 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "image/uploads"
+public_folder: "/image/uploads"
+
+locale: "pt"
+
+collections:
+  - name: "site"
+    label: "Conteúdo do Site"
+    files:
+      - name: "home"
+        label: "Página Principal"
+        file: "content/site.json"
+        format: "json"
+        fields:
+          - label: "Hero (Introdução)"
+            name: "hero"
+            widget: "object"
+            fields:
+              - { label: "Texto pequeno (kicker)", name: "kicker", widget: "string" }
+              - { label: "Título (aceita <br>)", name: "titleHtml", widget: "string" }
+              - { label: "Descrição", name: "sub", widget: "text" }
+
+              - label: "Pílulas (loop no mobile)"
+                name: "pills"
+                widget: "list"
+                field: { label: "Texto", name: "text", widget: "string" }
+
+          - label: "Hoje no Blue Chip (Card)"
+            name: "today"
+            widget: "object"
+            fields:
+              - { label: "Título do card", name: "title", widget: "string" }
+              - { label: "Texto do card", name: "text", widget: "text" }
+              - { label: "Texto quando houver flyer do dia", name: "autoText", widget: "text", required: false }
+
+              - label: "Mini cards"
+                name: "cards"
+                widget: "list"
+                fields:
+                  - { label: "Título (ex: Torneio)", name: "label", widget: "string" }
+                  - { label: "Detalhes (aceita <br>)", name: "detailsHtml", widget: "string" }
+
+              - { label: "Dica no rodapé do card", name: "tip", widget: "text" }
+
+          - label: "Carrosséis"
+            name: "carousels"
+            widget: "object"
+            fields:
+              - label: "Flyers / Eventos da agenda"
+                name: "flyers"
+                widget: "list"
+                summary: "{{fields.tag}} - {{fields.title}}"
+                fields:
+                  - { label: "Ativo no site", name: "enabled", widget: "boolean", default: true, required: false }
+                  - { label: "Imagem do flyer", name: "image", widget: "image" }
+                  - { label: "Tag (ex: SEG, HOJE, ESPECIAL)", name: "tag", widget: "string" }
+                  - { label: "Título", name: "title", widget: "string" }
+                  - { label: "Subtítulo", name: "subtitle", widget: "string" }
+                  - { label: "Data específica do evento", name: "eventDate", widget: "date", format: "YYYY-MM-DD", required: false }
+                  - label: "Dias da semana em que esse flyer vale"
+                    name: "weekdays"
+                    widget: "select"
+                    multiple: true
+                    required: false
+                    options:
+                      - { label: "Domingo", value: "dom" }
+                      - { label: "Segunda", value: "seg" }
+                      - { label: "Terça", value: "ter" }
+                      - { label: "Quarta", value: "qua" }
+                      - { label: "Quinta", value: "qui" }
+                      - { label: "Sexta", value: "sex" }
+                      - { label: "Sábado", value: "sab" }
+
+              - label: "Pratos (Destaques do Restaurante)"
+                name: "dishes"
+                widget: "list"
+                fields:
+                  - { label: "Imagem do prato", name: "image", widget: "image" }
+                  - { label: "Nome do prato", name: "title", widget: "string" }
+                  - { label: "Descrição curta", name: "subtitle", widget: "string" }
