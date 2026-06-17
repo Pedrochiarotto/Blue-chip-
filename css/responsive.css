@@ -12,7 +12,7 @@
     position:absolute;
     left: var(--pad);
     right: var(--pad);
-    top: 68px;
+    top: 82px;
     flex-direction:column;
     gap: 6px;
     padding: 12px;
