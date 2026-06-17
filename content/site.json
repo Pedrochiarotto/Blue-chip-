@@ -15,8 +15,14 @@
     "text": "Deixe aqui os destaques do dia (você pode atualizar conforme a agenda).",
     "autoText": "Confira o flyer do evento programado para hoje.",
     "cards": [
-      { "label": "Torneio", "detailsHtml": "Buy-in: R$ 0,00<br/>Horário: 00:00" },
-      { "label": "Cash", "detailsHtml": "Blinds: 0/0<br/>A partir: 00:00" }
+      {
+        "label": "Torneio",
+        "detailsHtml": "Buy-in: R$ 0,00<br/>Horário: 00:00"
+      },
+      {
+        "label": "Cash",
+        "detailsHtml": "Blinds: 0/0<br/>A partir: 00:00"
+      }
     ],
     "tip": "Dica: você pode colocar aqui “Regulamento / Dress code / Reservas / Regras de entrada”."
   },
@@ -24,26 +30,38 @@
     "flyers": [
       {
         "enabled": true,
-        "image": "/image/uploads/seg.png",
-        "tag": "SEG",
+        "image": "/image/uploads/300526sab.jpeg",
+        "tag": "Sab",
         "title": "Noite de Cash",
-        "subtitle": "Mesas abertas a partir das 18h",
+        "subtitle": "Mesas abertas a partir das 14h",
         "eventDate": "",
-        "weekdays": ["seg"]
+        "weekdays": [
+          "sab"
+        ]
       },
       {
         "enabled": true,
-        "image": "/image/uploads/ter.png",
+        "image": "/image/uploads/090626ter.jpeg",
         "tag": "TER",
-        "title": "Torneio Regular",
-        "subtitle": "Inscrições 19h • Início 20h",
+        "title": "Torneio 3K Turbo",
+        "subtitle": "Inscrições Início 20h",
         "eventDate": "",
-        "weekdays": ["ter"]
+        "weekdays": [
+          "ter"
+        ]
       }
     ],
     "dishes": [
-      { "image": "/image/uploads/burger.jpg", "title": "Hambúrguer artesanal", "subtitle": "Carne suculenta + molho da casa" },
-      { "image": "/image/uploads/porcao.jpg", "title": "Porção premium", "subtitle": "Perfeita para compartilhar" }
+      {
+        "image": "/image/uploads/sonoco_white-2-.png",
+        "title": "Hambúrguer artesanal",
+        "subtitle": "Carne suculenta + molho da casa"
+      },
+      {
+        "image": "/image/uploads/porcao.jpg",
+        "title": "Porção premium",
+        "subtitle": "Perfeita para compartilhar"
+      }
     ]
   }
 }
