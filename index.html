@@ -1,267 +1,230 @@
 <!doctype html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070627">
   <title>Blue Chip Poker Club</title>
-  <meta name="description"
-    content="Blue Chip Poker Club — torneios, cash games, eventos e restaurante. Experiência completa de poker na sua cidade." />
-  <script>
-    (function () {
-      var theme = localStorage.getItem("bluechip-theme") || "dark";
-      document.documentElement.setAttribute("data-theme", theme);
-    })();
-  </script>
+  <meta name="description" content="Blue Chip Poker Club — torneios, cash games, eventos e restaurante. Experiência completa de poker na sua cidade.">
+  <link rel="icon" href="image/LogoBlue.jpeg" type="image/jpeg">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/nav.css">
   <link rel="stylesheet" href="css/hero.css">
   <link rel="stylesheet" href="css/sections.css">
   <link rel="stylesheet" href="css/carousels.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/tournament.css">
+  <link rel="stylesheet" href="css/experience.css">
 </head>
-
 <body>
-  <!-- NAVBAR -->
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
   <header class="nav">
     <div class="container">
       <div class="nav-inner">
         <a class="brand" href="#inicio" aria-label="Blue Chip Poker Club">
-
-          <img src="image/LogoBlue.jpeg" alt="Blue Chip Poker Club" />
+          <img src="image/blue-chip-mark.svg" alt="" width="64" height="64">
           <div class="title">
-            <strong>Blue Chip</strong>
+            <strong id="brandName">Blue Chip</strong>
             <span>Poker Club</span>
           </div>
         </a>
-
-        <nav class="nav-links" id="navLinks">
-          <a href="#inicio">Início</a>
-          <a href="#programacao">Torneios & Cash</a>
+        <nav class="nav-links" id="navLinks" aria-label="Navegação principal">
+                        <a href="#inicio">Início</a>
+                        <a href="#torneio">Ao vivo</a>
+                        <a href="#programacao">Agenda</a>
           <a href="#restaurante">Restaurante</a>
           <a href="#localizacao">Localização</a>
+          <a class="nav-contact" data-whatsapp href="https://wa.me/5519996471948" target="_blank" rel="noopener">Falar com a casa<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
         </nav>
-
         <div class="nav-cta">
-          <button class="theme-toggle" id="themeToggle" type="button" aria-label="Mudar para versão light"
-            aria-pressed="false">
-            <span class="theme-toggle__icon" aria-hidden="true">☀</span>
-            <span class="theme-toggle__text">Light</span>
-          </button>
-          <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">
-            <span></span>
-            <span></span>
-            <span></span>
+          <button class="hamburger" id="hamburger" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="navLinks">
+            <span></span><span></span><span></span>
           </button>
         </div>
       </div>
     </div>
   </header>
 
-  <section class="hero" id="inicio">
-    <div class="container">
-      <div class="hero-grid">
-        <div>
-          <div class="kicker">
-            <span class="dot"></span>
-            <span id="heroKickerText">Experiência completa de poker na sua cidade</span>
+  <main id="conteudo">
+    <section class="hero" id="inicio">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div class="hero-brand-mark" aria-hidden="true"><img src="image/blue-chip-mark.svg" alt=""></div>
+            <div class="eyebrow"><span class="eyebrow__signal" aria-hidden="true"></span> Poker, gastronomia e comunidade</div>
+            <h1 id="heroTitle">Blue Chip Poker Club: Mais que um jogo, uma comunidade.</h1>
+            <p class="sub" id="heroDescription">Torneios, cash games e eventos especiais em um ambiente confortável, seguro e feito para quem ama poker. E para completar: restaurante no local para você jogar e aproveitar sem pressa.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#programacao">Explorar agenda <span aria-hidden="true">↗</span></a>
+              <a class="btn" href="#torneio"><span class="btn-live-dot" aria-hidden="true"></span>Acompanhar ao vivo</a>
+            </div>
+            <p class="hero-intro" id="kickerText">Experiência completa de poker na sua cidade</p>
+            <div class="hero-proof" aria-label="Diferenciais do clube">
+              <div><strong>Ao vivo</strong><span>Status do torneio em tempo real</span></div>
+              <div><strong>Completo</strong><span>Jogo, estrutura e gastronomia</span></div>
+            </div>
           </div>
 
-          <h1 id="heroTitle">
-            Jogue bem.<br>Sinta o clima.<br>Viva o Blue Chip.
-          </h1>
+          <aside class="hero-stage" aria-labelledby="todayTitle">
+            <div class="hero-stage__visual" role="img" aria-label="Jogador segurando cartas e fichas no Blue Chip Poker Club">
+              <div class="hero-stage__mark" aria-hidden="true"><img src="image/blue-chip-mark.svg" alt=""></div>
+              <div class="hero-stage__status"><span></span> Experiência Blue Chip</div>
+            </div>
+            <div class="hero-card">
+              <div class="hero-card__topline"><span>Programação</span><span>Hoje</span></div>
+              <div class="hero-card__content">
+                <div>
+                  <h2 id="todayTitle">Hoje no Blue Chip</h2>
+                  <p id="todayDescription">Confira os destaques e a programação do dia.</p>
+                </div>
+                <a class="hero-card__arrow" href="#programacao" aria-label="Ver programação de hoje">↗</a>
+              </div>
+              <p id="todayNote" class="today-note">Consulte a equipe sobre regulamento, reservas e regras de entrada.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+      <div class="hero-ticker" aria-label="Destaques do Blue Chip">
+        <div class="hero-ticker__track">
+          <span>Torneios regulares</span><i aria-hidden="true">◆</i><span>Cash diário</span><i aria-hidden="true">◆</i><span>Eventos especiais</span><i aria-hidden="true">◆</i><span>Restaurante no local</span><i aria-hidden="true">◆</i>
+          <span aria-hidden="true">Torneios regulares</span><i aria-hidden="true">◆</i><span aria-hidden="true">Cash diário</span><i aria-hidden="true">◆</i><span aria-hidden="true">Eventos especiais</span><i aria-hidden="true">◆</i><span aria-hidden="true">Restaurante no local</span><i aria-hidden="true">◆</i>
+        </div>
+      </div>
+    </section>
 
-          <p class="sub" id="heroSub">
-            Torneios, cash games e eventos especiais em um ambiente confortável, seguro e feito para quem ama poker.
-            E para completar: restaurante no local para você jogar e aproveitar sem pressa.
-          </p>
-
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#programacao">Ver programação</a>
-            <a class="btn" href="#localizacao">Como chegar</a>
+    <section class="tournament-section" id="torneio" aria-labelledby="tournamentHeading">
+      <div class="container">
+        <div class="section-head">
+          <div><span class="section-kicker"><i aria-hidden="true"></i> Live center</span><h2 id="tournamentHeading">Acompanhe o torneio</h2></div>
+          <a class="btn" href="#programacao">Consultar agenda</a>
+        </div>
+        <p id="tournamentConnection" role="status">Conectando à organização…</p>
+        <div id="tournamentEmpty" class="tournament-empty"><h3>Nenhum torneio publicado no momento</h3><p>Confira a agenda para planejar sua próxima visita.</p></div>
+        <article id="tournamentBoard" class="tournament-board" hidden aria-labelledby="tournamentName">
+          <div class="tournament-main">
+            <div class="tournament-heading"><h3 id="tournamentName"></h3><span id="tournamentState" class="tournament-state"></span></div>
+            <div class="tournament-clock"><span id="tournamentClockLabel">Tempo restante no nível</span><strong id="tournamentClock" role="timer" aria-live="off">00:00</strong><span id="tournamentLevel"></span></div>
+            <p id="tournamentNotice"></p>
           </div>
+          <div class="tournament-details">
+            <dl>
+              <div><dt>Blinds · small / big</dt><dd id="tournamentBlinds"></dd></div>
+              <div><dt>Ante</dt><dd id="tournamentAnte"></dd></div>
+              <div><dt>Jogadores / entradas</dt><dd id="tournamentPlayers"></dd></div>
+              <div><dt>Stack médio</dt><dd id="tournamentAverage"></dd></div>
+            </dl>
+            <p id="tournamentNote"></p>
+            <p id="tournamentUpdated"></p>
+          </div>
+        </article>
+        <button id="tournamentRetry" class="btn" type="button" hidden>Tentar reconectar</button>
+      </div>
+    </section>
 
-          <div class="pill-marquee" aria-label="Destaques do clube">
-            <div class="pill-marquee__track" id="heroPills">
-              <!-- será preenchido pelo JS -->
+    <section class="schedule-section" id="programacao">
+      <div class="container schedule-layout">
+        <div class="schedule-board">
+          <div class="section-head">
+            <div>
+              <h2 id="scheduleTitle">Torneios, Cash &amp; Eventos</h2>
+              <p id="scheduleDescription">Uma agenda pensada para todos os estilos: do recreativo ao competitivo.</p>
+            </div>
+          </div>
+          <div class="schedule-list" id="scheduleList" aria-label="Resumo da agenda" aria-live="polite">
+            <p class="schedule-list__message">Carregando agenda…</p>
+          </div>
+        </div>
+        <div class="schedule-showcase">
+          <div class="flyer-carousel" data-autoplay="true" data-interval="4500" tabindex="0" role="region" aria-roledescription="carrossel" aria-label="Programação semanal">
+            <div class="flyer-carousel__chrome"><span>Programação em destaque</span><span class="carousel-position" aria-hidden="true">01 / 01</span></div>
+            <div class="flyer-carousel__viewport">
+              <div class="flyer-carousel__track"><p class="carousel-loading">Carregando programação…</p></div>
+            </div>
+            <button class="flyer-carousel__btn prev" type="button" aria-label="Flyer anterior"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+            <button class="flyer-carousel__btn next" type="button" aria-label="Próximo flyer"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+            <div class="flyer-carousel__dots" role="tablist" aria-label="Selecionar dia"></div>
+            <p class="carousel-status" aria-live="polite"></p>
+            <p class="schedule-carousel-help">Arraste para navegar ou escolha um evento acima.</p>
+          </div>
+          <aside class="schedule-feature" aria-live="polite" aria-labelledby="scheduleFeatureTitle">
+            <h3 id="scheduleFeatureTitle">Programação em destaque</h3>
+            <p id="scheduleFeatureDescription">Os detalhes de cada torneio e evento aparecem aqui.</p>
+            <dl class="schedule-feature__meta">
+              <div><dt>Agenda</dt><dd id="scheduleFeatureTag">Em atualização</dd></div>
+              <div><dt>Detalhes</dt><dd id="scheduleFeatureInfo">Consulte a equipe da casa.</dd></div>
+            </dl>
+            <a class="btn btn-primary schedule-feature__cta" data-whatsapp href="#localizacao">Falar com a casa</a>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="restaurant-section" id="restaurante">
+      <div class="container">
+        <div class="section-head"><div><h2 id="restaurantTitle">Restaurante no local</h2></div></div>
+        <div class="feature">
+          <div class="panel restaurant-copy">
+            <h3 id="restaurantHeading">Do jantar ao pós-jogo</h3>
+            <p id="restaurantDescription">Além de um ambiente organizado e ético, o clube conta com hamburgueria de sliders, drinks especiais e diversas bebidas.</p>
+            <div class="grid-2">
+              <div class="info"><strong>Cardápio</strong><span>Porções • Lanches • Drinks</span></div>
+              <div class="info"><strong>Conforto</strong><span>Ambiente climatizado • Música • Atendimento</span></div>
+            </div>
+          </div>
+          <div class="panel restaurant-gallery">
+            <h3>Destaques do restaurante</h3>
+            <p class="muted carousel-help">Arraste as imagens ou use as setas para conhecer os destaques.</p>
+            <div class="dish-carousel" data-autoplay="true" data-interval="4500" tabindex="0" role="region" aria-roledescription="carrossel" aria-label="Pratos principais">
+              <div class="dish-carousel__viewport">
+                <div class="dish-carousel__track"><p class="carousel-loading">Carregando destaques…</p></div>
+              </div>
+              <button class="dish-carousel__btn prev" type="button" aria-label="Imagem anterior"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+              <button class="dish-carousel__btn next" type="button" aria-label="Próxima imagem"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+              <div class="dish-carousel__dots" role="tablist" aria-label="Selecionar prato"></div>
+              <p class="carousel-status" aria-live="polite"></p>
             </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <aside class="hero-card" aria-label="Destaques">
+    <section class="contact-section" id="localizacao">
+      <div class="container">
+        <div class="section-head">
           <div>
-            <h3 id="todayTitle">Hoje no Blue Chip</h3>
-            <figure class="today-flyer" id="todayFlyer" hidden>
-              <img id="todayFlyerImage" src="" alt="" loading="lazy" />
-              <figcaption id="todayFlyerCaption"></figcaption>
-            </figure>
-            <p id="todayText">Deixe aqui os destaques do dia (você pode atualizar conforme a agenda).</p>
-
-            <div class="mini-grid" id="todayMiniGrid">
-              <!-- será preenchido pelo JS -->
-            </div>
-
-            <div class="divider"></div>
-
+            <span class="section-kicker">Visite a casa</span>
+            <h2 id="contactTitle">Localização &amp; Contato</h2>
+            <p id="contactDescription">Encontre a casa no mapa e fale com a equipe para informações.</p>
           </div>
-
-          <a class="btn" href="https://wa.me/+5519996471948">Falar com a casa</a>
-        </aside>
-      </div>
-    </div>
-  </section>
-
-  <!-- TORNEIOS / CASH / EVENTOS -->
-  <section id="programacao">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <h2>Torneios, Cash & Eventos</h2>
+          <a class="btn btn-primary" href="#inicio">Voltar ao topo</a>
         </div>
-      </div>
-
-      <div class="flyer-carousel" data-autoplay="true" data-interval="4500" tabindex="0"
-        aria-label="Carrossel de programação semanal">
-        <div class="flyer-carousel__viewport">
-          <div class="flyer-carousel__track" id="flyerTrack">
-
+        <div class="contact-grid">
+          <div class="map-wrap">
+            <iframe id="mapFrame" title="Mapa com a localização do Blue Chip Poker Club" src="https://www.google.com/maps?q=Rua%20Visconde%20do%20Rio%20Branco%20245%20Araras%20SP&amp;output=embed" width="600" height="450" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
           </div>
-        </div>
-
-        <button class="flyer-carousel__btn prev" type="button" aria-label="Flyer anterior">‹</button>
-        <button class="flyer-carousel__btn next" type="button" aria-label="Próximo flyer">›</button>
-
-        <div class="flyer-carousel__dots" role="tablist" aria-label="Selecionar dia"></div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- RESTAURANTE -->
-  <section id="restaurante">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <h2>Restaurante no local</h2>
-        </div>
-      </div>
-
-      <div class="feature">
-        <div class="panel">
-          <h3>Do jantar ao pós-jogo</h3>
-          <p>
-            Além de um ambiente organizado e ético, o clube inclui uma hamburgueria de sliders, onde os jogadores podem
-            desfrutar de lanches preparados na hora, e um serviço de bebidas que inclui drinks especiais e diversas
-            opções de bebidas. Com isso, o Blue Chip cria um espaço acolhedor e sofisticado, combinando a emoção do
-            poker com o conforto de uma experiência gastronômica de qualidade, proporcionando aos jogadores um ambiente
-            exclusivo e confortável.
-          </p>
-
-          <div class="grid-2">
-            <div class="info">
-              <strong>Cardápio</strong>
-              <span>Porções • Lanches • Drinks</span>
-            </div>
-            <div class="info">
-              <strong>Conforto</strong>
-              <span>Ambiente climatizado • Música • Atendimento</span>
+          <div class="contact">
+            <h3>Fale com o Blue Chip</h3>
+            <div class="row"><div><div class="label">Endereço</div><div class="value" id="contactAddress">Rua Visconde do Rio Branco, 245 - Vila Bressan</div></div></div>
+            <div class="row"><div><div class="label">WhatsApp</div><div class="value"><a id="contactWhatsapp" data-whatsapp href="https://wa.me/5519996471948" target="_blank" rel="noopener">+55 (19) 99647-1948</a></div></div></div>
+            <div class="row"><div><div class="label">E-mail</div><div class="value"><a id="contactEmail" href="mailto:contato@bluechip.com.br">contato@bluechip.com.br</a></div></div></div>
+            <small>Para regulamentos, reservas e informações sobre eventos, fale diretamente com a equipe.</small>
+            <div class="contact-actions">
+              <a class="btn btn-primary" data-whatsapp href="https://wa.me/5519996471948" target="_blank" rel="noopener">Falar pelo WhatsApp</a>
+              <a class="btn" href="#programacao">Ver torneios</a>
             </div>
           </div>
         </div>
-
-        <div class="panel">
-          <h3>Destaques do restaurante</h3>
-          <p class="muted" style="margin-top:6px;">
-
-          </p>
-
-          <div class="dish-carousel" data-autoplay="true" data-interval="4500"
-            aria-label="Carrossel de pratos principais">
-            <div class="dish-carousel__viewport">
-              <div class="dish-carousel__track" id="dishTrack">
-                
-              </div>
-            </div>
-
-            <button class="dish-carousel__btn prev" type="button" aria-label="Imagem anterior">‹</button>
-            <button class="dish-carousel__btn next" type="button" aria-label="Próxima imagem">›</button>
-
-            <div class="dish-carousel__dots" role="tablist" aria-label="Selecionar prato"></div>
-          </div>
-        </div>
       </div>
-    </div>
-  </section>
-
-  <!-- MAPA / LOCALIZAÇÃO / CONTATO -->
-  <section id="localizacao">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <h2>Localização & Contato</h2>
-          <p>
-            Encontre a casa no mapa e fale com a equipe para informações.
-          </p>
-        </div>
-
-      </div>
-
-      <div class="contact-grid">
-        <div class="map-wrap" aria-label="Mapa">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4862.315121766287!2d-47.385083488125915!3d-22.354449179562828!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94c8773ada623345%3A0xe51b41b5e2ed62c!2sRua%20Visconde%20do%20Rio%20Branco%2C%20245%20-%20Vila%20Bressan%2C%20Araras%20-%20SP%2C%2013600-080!5e1!3m2!1spt-BR!2sbr!4v1769180043857!5m2!1spt-BR!2sbr"
-            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-
-        <div class="contact">
-          <h3>Fale com o Blue Chip</h3>
-
-          <div class="row">
-            <div>
-              <div class="label">Endereço</div>
-              <div class="value">Rua Visconde do Rio Branco, 245 - Vila Bressan</div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <div class="label">WhatsApp</div>
-              <div class="value">
-                <a href="https://wa.me/+5519996471948" target="_blank" rel="noopener">(19) 996471948</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <div class="label">E-mail</div>
-              <div class="value"><a href="mailto:contato@bluechip.com.br">contato@bluechip.com.br</a></div>
-            </div>
-          </div>
-
-          <small>
-            Dica: você pode incluir aqui links do Instagram, regras da casa e regulamento dos torneios.
-          </small>
-
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <a class="btn btn-primary" href="https://wa.me/+5519996471948" target="_blank" rel="noopener">Tenho
-              interesse</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
   <footer>
     <div class="container">
       <div class="footer-inner">
-        <div class="brand" style="gap:10px;">
-          <img src="image/LogoBlue.jpeg" alt="Blue Chip Poker Club" />
-          <div class="title">
-            <strong>Blue Chip Poker Club</strong>
-            <span class="muted">Torneios • Cash • Eventos • Restaurante</span>
-          </div>
+        <div class="brand footer-brand">
+          <img src="image/LogoBlue.jpeg" alt="">
+          <div class="title"><strong>Blue Chip Poker Club</strong><span class="muted">Torneios • Cash • Eventos • Restaurante</span></div>
         </div>
         <div class="muted">© <span id="year"></span> Blue Chip Poker Club. Todos os direitos reservados.</div>
       </div>
@@ -269,10 +232,10 @@
   </footer>
 
   <script src="js/year.js"></script>
-  <script src="js/theme.js"></script>
   <script src="js/nav.js"></script>
-  <script src="js/content.js"></script>
   <script src="js/carousel.js"></script>
+  <script src="js/public.js"></script>
+  <script src="js/tournament.js"></script>
+  <script src="js/experience.js"></script>
 </body>
-
 </html>

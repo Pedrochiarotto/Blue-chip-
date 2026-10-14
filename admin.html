@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070627">
+  <title>Painel — Blue Chip</title>
+  <link rel="icon" href="/image/LogoBlue.jpeg" type="image/jpeg">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-page">
+  <a class="skip-link" href="#painel">Pular para o conteúdo</a>
+  <header class="admin-nav">
+    <a class="admin-brand" href="/admin" aria-label="Painel Blue Chip">
+      <img src="/image/blue-chip-mark.svg" alt="" width="60" height="60">
+      <span><strong>Blue Chip</strong><small>Painel de conteúdo</small></span>
+    </a>
+    <nav aria-label="Ações do painel">
+      <a class="site-link" href="/" target="_blank" rel="noopener">
+        Ver site
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14 5h5v5M10 14 19 5M19 14v5H5V5h5"/></svg>
+      </a>
+      <button id="logout" class="ghost" type="button">Sair</button>
+    </nav>
+  </header>
+  <main class="admin-shell" id="painel">
+    <div class="admin-heading">
+      <div>
+        <h1>Painel da casa</h1>
+        <p class="muted">As alterações salvas aparecem imediatamente na página pública.</p>
+      </div>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Seções de conteúdo" aria-orientation="vertical">
+      <button id="tab-content" class="active" type="button" role="tab" aria-selected="true" aria-controls="contentPanel" data-tab="content">Textos e contato</button>
+      <button id="tab-schedule" type="button" role="tab" aria-selected="false" aria-controls="cardsPanel" data-tab="schedule">Programação</button>
+      <button id="tab-restaurant" type="button" role="tab" aria-selected="false" aria-controls="cardsPanel" data-tab="restaurant">Restaurante</button>
+      <button id="tab-tournament" type="button" role="tab" aria-selected="false" aria-controls="tournamentPanel" data-tab="tournament">Torneio ao vivo</button>
+    </div>
+    <section id="contentPanel" class="panel" role="tabpanel" aria-labelledby="tab-content">
+      <form id="contentForm">
+        <div id="contentFields" class="field-grid" aria-busy="true"></div>
+        <div class="form-actions"><button type="submit">Salvar conteúdo</button></div>
+      </form>
+    </section>
+    <section id="cardsPanel" class="panel hidden" role="tabpanel" aria-labelledby="tab-schedule">
+      <div class="cards-heading">
+        <div>
+          <h2 id="cardsTitle">Programação</h2>
+          <p class="muted">Adicione, edite, ordene ou oculte os cards exibidos no site.</p>
+        </div>
+        <button id="newCard" type="button">Novo card</button>
+      </div>
+      <div id="cardsList" class="card-list" aria-live="polite"></div>
+    </section>
+    <section id="tournamentPanel" class="panel hidden" role="tabpanel" aria-labelledby="tab-tournament">
+      <h2>Torneio ao vivo</h2>
+      <p class="muted">Defina a estrutura uma vez. O relógio, os níveis, as blinds, o ante e os intervalos são atualizados pelo sistema e publicados no site automaticamente.</p>
+      <p id="tournamentAdminStatus" role="status">Carregando dados…</p>
+      <div class="tournament-workspace">
+        <form id="automationForm" class="tournament-setup">
+          <fieldset id="automationFields" disabled style="border:0;padding:0;margin:0">
+            <h3>Estrutura automática</h3>
+            <p class="muted">Ao iniciar uma nova estrutura, o nível 1 começa imediatamente.</p>
+            <div class="field-grid">
+              <label class="wide">Nome do torneio<input name="name" maxlength="120" required></label>
+              <label>Duração de cada nível (minutos)<input name="level_duration_minutes" type="number" min="1" max="240" value="20" required></label>
+              <label>Ante (% da big blind)<input name="ante_percent" type="number" min="0" max="100" value="0" step="1" required></label>
+              <label>Small blind inicial<input name="small_blind" type="number" min="0" max="1000000000" value="100" required></label>
+              <label>Big blind inicial<input name="big_blind" type="number" min="1" max="1000000000" value="200" required></label>
+              <label>Forma de aumento<select name="blind_growth_mode"><option value="multiplier">Multiplicador</option><option value="fixed">Acréscimo fixo</option></select></label>
+              <label><span id="blindGrowthLabel">Multiplicador por nível</span><input name="blind_growth_value" type="number" min="1" max="1000000000" value="2" step="0.1" required></label>
+              <label>Intervalo a cada quantos níveis?<input name="break_every_levels" type="number" min="0" max="100" value="4" required></label>
+              <label>Duração do intervalo (minutos)<input name="break_duration_minutes" type="number" min="0" max="120" value="15" required></label>
+            </div>
+            <div class="structure-preview" aria-live="polite">
+              <div class="structure-preview__head"><h4>Prévia da estrutura</h4><span id="previewSummary"></span></div>
+              <ol id="structurePreview"></ol>
+            </div>
+            <div class="form-actions"><button id="automationSubmit" type="submit">Iniciar torneio automático</button></div>
+          </fieldset>
+        </form>
+        <aside class="tournament-control" aria-labelledby="tournamentControlTitle">
+          <p class="tournament-control__label">Controle</p>
+          <h3 id="tournamentControlTitle">Aguardando estrutura</h3>
+          <p id="tournamentControlDetail">Preencha a estrutura para iniciar o acompanhamento automático.</p>
+          <dl>
+            <div><dt>Estado</dt><dd id="controlState">—</dd></div>
+            <div><dt>Próxima mudança</dt><dd id="controlClock">—</dd></div>
+          </dl>
+          <div class="tournament-control__actions">
+            <button id="pauseTournament" class="ghost" type="button" disabled>Pausar relógio</button>
+            <button id="resumeTournament" class="ghost hidden" type="button" disabled>Retomar relógio</button>
+            <button id="endTournament" class="danger-button" type="button" disabled>Encerrar torneio</button>
+          </div>
+        </aside>
+      </div>
+      <form id="tournamentMetricsForm" class="tournament-metrics">
+        <fieldset id="tournamentMetricsFields" disabled style="border:0;padding:0;margin:0">
+          <div class="section-rule"><h3>Atualizações da mesa</h3><p class="muted">Use somente quando jogadores, entradas, stack médio ou o aviso mudarem. A estrutura do torneio continua rodando.</p></div>
+          <div class="field-grid">
+            <label>Jogadores restantes<input name="players" type="number" min="0" max="1000000" value="0" required></label>
+            <label>Entradas totais (incluindo reentradas)<input name="entries" type="number" min="0" max="1000000" value="0" required></label>
+            <label>Stack médio<input name="average_stack" type="number" min="0" max="1000000000" value="0" required></label>
+            <label class="wide">Aviso da organização<textarea name="note" maxlength="300" rows="3"></textarea></label>
+          </div>
+          <div class="form-actions"><button type="submit">Publicar dados da mesa</button></div>
+        </fieldset>
+      </form>
+      <button id="tournamentReload" class="ghost" type="button">Recarregar dados do torneio</button>
+    </section>
+  </main>
+  <dialog id="cardDialog" aria-labelledby="dialogTitle">
+    <form id="cardForm">
+      <div class="dialog-head">
+        <h2 id="dialogTitle">Novo card</h2>
+        <button type="button" id="closeDialog" class="icon-btn" aria-label="Fechar janela">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <input type="hidden" name="id">
+      <input type="hidden" name="carousel">
+      <label for="cardTag">Etiqueta</label>
+      <input id="cardTag" name="tag" maxlength="40" placeholder="Ex.: SÁBADO">
+      <label for="cardTitle">Título</label>
+      <input id="cardTitle" name="title" maxlength="120" required>
+      <label for="cardDescription">Descrição</label>
+      <textarea id="cardDescription" name="description" rows="3" maxlength="300"></textarea>
+      <div class="two-cols">
+        <div><label for="cardPosition">Ordem</label><input id="cardPosition" name="position" type="number" min="0" max="999" value="0"></div>
+        <label class="check"><input name="active" type="checkbox" checked> Visível no site</label>
+      </div>
+      <label for="imageFile">Imagem</label>
+      <input id="imageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+      <label class="sr-only" for="imageUrl">URL da imagem</label>
+      <input id="imageUrl" name="image_url" placeholder="ou cole a URL da imagem">
+      <img id="preview" class="preview hidden" alt="Prévia da imagem do card">
+      <p id="dialogError" class="error" role="alert" aria-live="assertive"></p>
+      <div class="form-actions">
+        <button type="button" class="ghost" id="cancelDialog">Cancelar</button>
+        <button type="submit">Salvar card</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="/js/admin.js"></script>
+  <script src="/js/tournament-admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+.tournament-section{background:#09082e}
+.tournament-section [hidden]{display:none!important}
+.tournament-section .section-head{align-items:center}
+#tournamentConnection{color:#c8c5e6;font-size:13px;margin:0 0 20px}
+.tournament-empty{padding:32px 0;border-top:1px solid #35315a}
+.tournament-empty h3{font-size:23px;margin:0 0 10px}
+.tournament-empty p{color:#c8c5e6;margin:0}
+.tournament-board{display:grid;grid-template-columns:1.15fr 1fr;border:1px solid #494278;border-radius:16px;overflow:hidden}
+.tournament-main{padding:clamp(24px,4vw,48px);background:#1104a4}
+.tournament-heading{display:flex;gap:16px;justify-content:space-between;align-items:start}
+.tournament-heading h3{font-family:Georgia,serif;font-size:clamp(26px,3vw,38px);line-height:1.15;margin:0;overflow-wrap:anywhere}
+.tournament-state{padding:7px 11px;border:1px solid #aaa3f0;border-radius:999px;font-size:12px;white-space:nowrap}
+.tournament-clock{display:flex;flex-direction:column;margin:38px 0 24px;gap:8px;font-variant-numeric:tabular-nums}
+.tournament-clock>span{color:#e0dcff;font-size:15px}
+.tournament-clock strong{font-size:clamp(64px,7vw,96px);line-height:1.05;letter-spacing:-.035em;font-weight:650}
+#tournamentNotice{min-height:24px;line-height:1.5;color:#e0dcff;margin:0}
+.tournament-details{padding:clamp(24px,4vw,48px)}
+.tournament-details dl{margin:0}
+.tournament-details dl>div{display:flex;gap:20px;justify-content:space-between;align-items:baseline;border-bottom:1px solid #35315a;padding:18px 0}
+.tournament-details dl>div:first-child{padding-top:0}
+.tournament-details dt{color:#c8c5e6;font-size:14px}
+.tournament-details dd{margin:0;font-size:23px;font-weight:650;font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere;min-width:0}
+#tournamentNote{line-height:1.6;white-space:pre-line;overflow-wrap:anywhere}
+#tournamentUpdated{font-size:12px;color:#c8c5e6;margin:24px 0 0}
+#tournamentRetry{margin-top:20px}
+@media(max-width:760px){.tournament-board{grid-template-columns:1fr}.tournament-heading{flex-direction:column}.tournament-details dd{font-size:20px}.tournament-clock strong{font-size:clamp(44px,16vw,72px)}}

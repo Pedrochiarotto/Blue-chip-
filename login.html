@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070627">
+  <title>Entrar — Blue Chip</title>
+  <link rel="icon" href="/image/LogoBlue.jpeg" type="image/jpeg">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="auth-page">
+  <main class="login-card">
+    <a class="login-brand" href="/" aria-label="Voltar ao site Blue Chip">
+      <img src="/image/blue-chip-mark.svg" alt="" width="60" height="60">
+      <span>Blue Chip <small>Poker Club</small></span>
+    </a>
+    <div class="login-heading">
+      <h1>Gerencie seu site</h1>
+      <p class="muted">Entre para atualizar textos, contatos e a programação da casa.</p>
+    </div>
+    <form id="loginForm">
+      <label for="username">Usuário</label>
+      <input id="username" name="username" autocomplete="username" required autofocus>
+      <label for="password">Senha</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <p id="error" class="error" role="alert" aria-live="assertive"></p>
+      <button type="submit">Entrar</button>
+    </form>
+    <a class="back" href="/">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      Voltar para o site
+    </a>
+  </main>
+  <script src="/js/login.js"></script>
+</body>
+</html>

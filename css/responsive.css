@@ -1,10 +1,19 @@
 /* RESPONSIVO (geral) */
 @media (max-width: 980px){
   .hero-grid{ grid-template-columns: 1fr; }
+  .hero-card{ max-width:680px; }
+  .schedule-layout{ grid-template-columns:1fr; }
+  .schedule-board{ max-width:760px; }
+  .schedule-section .section-head h2{ max-width:12ch; }
+  .schedule-section .section-head .btn{ margin-top:20px; }
+  .schedule-section .flyer-carousel__slide img{ height:420px; }
+  .schedule-section .flyer-carousel__slide .carousel-placeholder{ min-height:420px; }
   .cards{ grid-template-columns: 1fr; }
   .feature{ grid-template-columns: 1fr; }
+  .restaurant-copy{ max-width:680px; }
   .contact-grid{ grid-template-columns: 1fr; }
-  .map-wrap{ min-height: 320px; }
+  .map-wrap{ min-height:380px; border-radius:var(--radius) var(--radius) 0 0; }
+  .contact{ border-radius:0 0 var(--radius) var(--radius); }
   .brand{ min-width: auto; }
 
   .nav-links{
@@ -17,8 +26,7 @@
     gap: 6px;
     padding: 12px;
     border-radius: 16px;
-    background: rgba(5,5,27,.92);
-    border: 1px solid rgba(159,154,214,.22);
+    background: rgba(5,5,27,.98);
     box-shadow: var(--shadow);
   }
   .nav-links a{ width: 100%; }
@@ -36,15 +44,12 @@
   :root{ --pad: 16px; }
 
   /* HERO: texto mais compacto */
-  h1{ font-size: 32px; line-height: 1.06; }
+  h1{ max-width:none; font-size: 32px; line-height: 1.06; }
+  .hero::before{ height:auto; aspect-ratio:var(--hero-aspect); background-size:cover,contain; }
 
   .sub{
     font-size: 14.5px;
     line-height: 1.55;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-    overflow: hidden;
   }
 
   /* Botões full width */
@@ -61,16 +66,29 @@
 
   /* Mini cards: 1 coluna */
   .mini-grid{ grid-template-columns: 1fr; gap: 10px; }
+  .hero-card{ padding:20px; }
 
   /* Carrosséis menores */
   .dish-carousel__slide img{ height: 210px; }
   .flyer-carousel__slide img{ height: 260px; }
+  .dish-carousel__slide .carousel-placeholder{ min-height:210px; }
+  .flyer-carousel__slide .carousel-placeholder{ min-height:260px; }
+  .schedule-section .flyer-carousel__slide img{ height:300px; }
+  .schedule-section .flyer-carousel__slide .carousel-placeholder{ min-height:300px; }
+  .schedule-item{ grid-template-columns:68px minmax(0,1fr); gap:12px; padding:16px 20px; }
+  .schedule-item__action{ display:none; }
+  .schedule-section .section-head{ padding:24px 20px; }
+  .restaurant-gallery .dish-carousel__slide img{ height:240px; }
+  .restaurant-gallery .carousel-placeholder{ min-height:240px; }
 
   /* CTA das sections full width */
   .section-head .btn,
   .section-head .btn-primary{
     width: 100%;
   }
+  .section-head{ align-items:stretch; flex-direction:column; }
+  .contact-actions .btn{ flex:1 1 100%; }
+  .footer-inner{ align-items:flex-start; flex-direction:column; }
 
   /* Marquee loop SEM scrollbar */
   .pill-marquee{
@@ -84,6 +102,7 @@
     animation: pillMarquee 28s linear infinite; /* aumente para mais lento */
     will-change: transform;
   }
+  .pill[aria-hidden="true"]{ display:inline-flex; }
   @keyframes pillMarquee{
     0%   { transform: translateX(0); }
     100% { transform: translateX(-50%); }
@@ -91,5 +110,7 @@
 }
 
 @media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
   .pill-marquee__track{ animation: none !important; }
+  .dish-carousel__track,.flyer-carousel__track{ transition:none; }
 }
