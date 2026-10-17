@@ -19,9 +19,14 @@ create table if not exists public.cards (
   title text not null,
   description text not null default '',
   image_url text not null default '',
+  link_url text not null default '',
   position integer not null default 0,
   active boolean not null default true
 );
+
+-- Mantém projetos existentes compatíveis ao executar novamente este arquivo.
+alter table public.cards
+  add column if not exists link_url text not null default '';
 
 create table if not exists public.tournament (
   id integer primary key check (id = 1),

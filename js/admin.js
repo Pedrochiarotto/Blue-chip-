@@ -42,7 +42,10 @@ const request = async (url, options = {}) => {
   if (!response.ok) {
     let data = {};
     try { data = await response.json(); } catch {}
-    throw new Error(data.detail || "Não foi possível concluir a ação. Tente novamente.");
+    const detail = Array.isArray(data.detail)
+      ? data.detail.map((item) => item.msg?.replace(/^Value error,\s*/i, "") || "Revise os campos informados.").join(" ")
+      : data.detail;
+    throw new Error(detail || "Não foi possível concluir a ação. Tente novamente.");
   }
   return response.status === 204 ? null : response.json();
 };
@@ -128,7 +131,7 @@ function renderCards() {
     const copy = document.createElement("div");
     const meta = document.createElement("span");
     meta.className = "tag";
-    meta.textContent = [card.tag, `ORDEM ${card.position}`, card.active ? "" : "OCULTO"].filter(Boolean).join(" · ");
+    meta.textContent = [card.tag, `ORDEM ${card.position}`, card.link_url ? "COM LINK" : "", card.active ? "" : "OCULTO"].filter(Boolean).join(" · ");
     const heading = document.createElement("strong");
     heading.textContent = card.title;
     const description = document.createElement("p");
@@ -157,12 +160,13 @@ function openDialog(card = null) {
   form.reset();
   form.elements.carousel.value = current;
   form.elements.active.checked = true;
+  document.getElementById("cardLinkField").hidden = current !== "restaurant";
   const preview = document.getElementById("preview");
   preview.classList.add("hidden");
   document.getElementById("dialogError").textContent = "";
   if (card) {
-    ["id", "carousel", "tag", "title", "description", "image_url", "position"].forEach((key) => {
-      form.elements[key].value = card[key];
+    ["id", "carousel", "tag", "title", "description", "image_url", "link_url", "position"].forEach((key) => {
+      form.elements[key].value = card[key] ?? "";
     });
     form.elements.active.checked = Boolean(card.active);
     if (card.image_url) {
@@ -277,6 +281,7 @@ document.getElementById("cardForm").addEventListener("submit", async (event) => 
     title: fields.title.value,
     description: fields.description.value,
     image_url: fields.image_url.value,
+    link_url: fields.carousel.value === "restaurant" ? fields.link_url.value : "",
     position: Number(fields.position.value),
     active: fields.active.checked
   };

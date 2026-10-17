@@ -4,6 +4,15 @@
     if (element && value != null) element.textContent = value;
   };
 
+  const safeExternalUrl = (value) => {
+    try {
+      const url = new URL(value);
+      return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+    } catch {
+      return "";
+    }
+  };
+
   const renderCarousel = (kind, cards) => {
     const prefix = kind === "schedule" ? "flyer-carousel" : "dish-carousel";
     const root = document.querySelector(`.${prefix}`);
@@ -50,7 +59,23 @@
       const description = document.createElement("span");
       description.textContent = card.description;
       caption.append(title, description);
-      figure.append(media, caption);
+      const linkUrl = kind === "restaurant" ? safeExternalUrl(card.link_url) : "";
+      if (linkUrl && card.image_url) {
+        figure.classList.add("is-linked");
+        const mediaLink = document.createElement("a");
+        mediaLink.className = "dish-carousel__media-link";
+        mediaLink.href = linkUrl;
+        mediaLink.target = "_blank";
+        mediaLink.rel = "noopener noreferrer";
+        mediaLink.setAttribute("aria-label", `Abrir detalhes de ${card.title} em uma nova aba`);
+        const linkLabel = document.createElement("span");
+        linkLabel.className = "dish-carousel__link-label";
+        linkLabel.innerHTML = 'Ver detalhes <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg>';
+        mediaLink.append(media, linkLabel);
+        figure.append(mediaLink, caption);
+      } else {
+        figure.append(media, caption);
+      }
       track.appendChild(figure);
     });
   };

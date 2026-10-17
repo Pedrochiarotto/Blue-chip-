@@ -46,13 +46,21 @@ class BlueChipApiTest(unittest.TestCase):
         response = self.client.put("/api/admin/content", json={"content": {"today_title": "Evento de hoje"}})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.client.get("/api/public").json()["content"]["today_title"], "Evento de hoje")
-        payload = {"carousel": "schedule", "tag": "SEXTA", "title": "Deep Stack", "description": "Início às 20h", "image_url": "", "position": 10, "active": True}
+        payload = {"carousel": "restaurant", "tag": "", "title": "Hambúrguer especial", "description": "Molho da casa", "image_url": "https://example.com/prato.jpg", "link_url": "https://example.com/cardapio", "position": 10, "active": True}
         created = self.client.post("/api/admin/cards", json=payload)
         self.assertEqual(created.status_code, 201)
         card_id = created.json()["id"]
-        payload["title"] = "Deep Stack Especial"
+        saved = next(card for card in self.client.get("/api/public").json()["cards"] if card["id"] == card_id)
+        self.assertEqual(saved["link_url"], payload["link_url"])
+        payload["title"] = "Hambúrguer especial atualizado"
         self.assertEqual(self.client.put(f"/api/admin/cards/{card_id}", json=payload).status_code, 200)
         self.assertEqual(self.client.delete(f"/api/admin/cards/{card_id}").status_code, 204)
+
+    def test_card_rejects_unsafe_link(self):
+        self.login()
+        payload = {"carousel": "restaurant", "title": "Prato", "link_url": "javascript:alert(1)"}
+        response = self.client.post("/api/admin/cards", json=payload)
+        self.assertEqual(response.status_code, 422)
 
 
 if __name__ == "__main__":

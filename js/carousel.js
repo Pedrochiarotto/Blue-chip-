@@ -17,6 +17,7 @@
     let isDragging = false;
     let startX = 0;
     let currentX = 0;
+    let suppressClick = false;
     let autoplayDirection = 1;
     const threshold = 40;
 
@@ -102,6 +103,7 @@
 
     const onDown = (x) => {
       isDragging = true;
+      suppressClick = false;
       startX = x;
       currentX = x;
       track.classList.add("is-dragging");
@@ -112,6 +114,7 @@
       if (!isDragging) return;
       currentX = x;
       const delta = currentX - startX;
+      if (Math.abs(delta) > 8) suppressClick = true;
       track.style.transform = `translate3d(calc(${-index * 100}% + ${delta * 0.15}px),0,0)`;
     };
 
@@ -123,7 +126,14 @@
       if (Math.abs(delta) >= threshold) goTo(index + (delta < 0 ? 1 : -1));
       else update(false);
       startAutoplay();
+      window.setTimeout(() => { suppressClick = false; }, 0);
     };
+
+    viewport.addEventListener("click", (event) => {
+      if (!suppressClick) return;
+      event.preventDefault();
+      event.stopPropagation();
+    }, true);
 
     viewport.addEventListener("pointerdown", (event) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;

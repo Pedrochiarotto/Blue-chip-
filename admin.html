@@ -135,6 +135,11 @@
       <label class="sr-only" for="imageUrl">URL da imagem</label>
       <input id="imageUrl" name="image_url" placeholder="ou cole a URL da imagem">
       <img id="preview" class="preview hidden" alt="Prévia da imagem do card">
+      <div id="cardLinkField" class="card-link-field" hidden>
+        <label for="cardLinkUrl">Link do prato <span class="optional-label">Opcional</span></label>
+        <input id="cardLinkUrl" name="link_url" type="url" maxlength="1000" inputmode="url" placeholder="https://exemplo.com/cardapio" aria-describedby="cardLinkHint">
+        <small id="cardLinkHint">Ao clicar na imagem, o visitante abrirá este endereço em uma nova aba.</small>
+      </div>
       <p id="dialogError" class="error" role="alert" aria-live="assertive"></p>
       <div class="form-actions">
         <button type="button" class="ghost" id="cancelDialog">Cancelar</button>

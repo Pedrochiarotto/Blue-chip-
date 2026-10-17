@@ -159,6 +159,10 @@ dialog input,dialog textarea{ margin-bottom:16px; }
 .check{ display:flex; align-items:center; gap:9px; min-height:44px; padding-top:26px; }
 .check input{ width:18px; height:18px; margin:0; accent-color:var(--blue); }
 .preview{ width:100%; height:200px; margin:2px 0 16px; border-radius:12px; object-fit:cover; }
+.card-link-field{ margin-top:4px; }
+.card-link-field input{ margin-bottom:6px; }
+.card-link-field small{ display:block; margin-bottom:16px; color:var(--muted); font-size:12px; line-height:1.45; }
+.optional-label{ margin-left:6px; color:var(--muted); font-size:11px; font-weight:500; }
 
 @media(max-width:720px){
   .admin-nav{ padding-inline:14px; }

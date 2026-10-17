@@ -19,12 +19,32 @@
 .dish-carousel__track.is-dragging{ transition:none; cursor: grabbing; }
 
 .dish-carousel__slide{ min-width: 100%; margin: 0; position: relative; }
+.dish-carousel__media-link{ position:relative; display:block; color:inherit; cursor:pointer; }
+.dish-carousel__slide.is-linked figcaption{ pointer-events:none; }
 .dish-carousel__slide img{
   width: 100%;
   height: 260px;
   object-fit: cover;
   display: block;
 }
+.dish-carousel__link-label{
+  position:absolute;
+  top:12px;
+  right:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  min-height:36px;
+  padding:8px 11px;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:999px;
+  background:rgba(7,6,39,.86);
+  color:#fff;
+  font-size:12px;
+  font-weight:750;
+}
+.dish-carousel__link-label svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.dish-carousel__media-link:focus-visible{ outline:3px solid var(--focus); outline-offset:-4px; border-radius:14px; }
 .dish-carousel__slide figcaption{
   position: absolute;
   left: 12px;
