@@ -10,6 +10,8 @@ import time
 import uuid
 from pathlib import Path
 from typing import Annotated, Literal
+from urllib.error import HTTPError, URLError
+from urllib.request import Request as UrlRequest, urlopen
 
 from fastapi import Cookie, FastAPI, File, Form, HTTPException, Request, Response, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
@@ -20,6 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 UPLOAD_DIR = BASE_DIR / "uploads"
 DB_PATH = DATA_DIR / "bluechip.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET", "club-media")
 SESSION_TTL = 60 * 60 * 12
 
 DATA_DIR.mkdir(exist_ok=True)
@@ -47,11 +53,51 @@ DEFAULT_CONTENT = {
 }
 
 
-def db() -> sqlite3.Connection:
+class DatabaseConnection:
+    def __init__(self, connection, postgres: bool):
+        self.connection = connection
+        self.postgres = postgres
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        try:
+            if exc_type is None:
+                self.connection.commit()
+            else:
+                self.connection.rollback()
+            return False
+        finally:
+            self.connection.close()
+
+    def execute(self, query: str, params=()):
+        if self.postgres:
+            query = query.replace("BEGIN IMMEDIATE", "BEGIN").replace("?", "%s")
+        return self.connection.execute(query, params)
+
+    def executemany(self, query: str, params):
+        if self.postgres:
+            query = query.replace("?", "%s")
+        return self.connection.executemany(query, params)
+
+
+def using_postgres() -> bool:
+    return bool(DATABASE_URL)
+
+
+def db() -> DatabaseConnection:
+    if using_postgres():
+        try:
+            import psycopg
+            from psycopg.rows import dict_row
+        except ImportError as exc:
+            raise RuntimeError("Instale psycopg[binary] para usar DATABASE_URL.") from exc
+        return DatabaseConnection(psycopg.connect(DATABASE_URL, row_factory=dict_row), True)
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")
-    return connection
+    return DatabaseConnection(connection, False)
 
 
 def password_hash(password: str, salt: str | None = None) -> str:
@@ -68,32 +114,89 @@ def verify_password(password: str, stored: str) -> bool:
     return hmac.compare_digest(password_hash(password, salt), stored)
 
 
+def decode_json(value):
+    return value if isinstance(value, (dict, list)) else json.loads(value)
+
+
+def upload_to_supabase(name: str, contents: bytes, content_type: str) -> str:
+    if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
+        raise HTTPException(503, "O armazenamento de imagens do Supabase não está configurado.")
+    endpoint = f"{SUPABASE_URL}/storage/v1/object/{SUPABASE_BUCKET}/{name}"
+    request = UrlRequest(
+        endpoint,
+        data=contents,
+        method="POST",
+        headers={
+            "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+            "apikey": SUPABASE_SERVICE_ROLE_KEY,
+            "Content-Type": content_type,
+            "x-upsert": "false",
+        },
+    )
+    try:
+        with urlopen(request, timeout=20) as response:
+            if response.status not in (200, 201):
+                raise HTTPException(502, "O Supabase recusou o upload da imagem.")
+    except (HTTPError, URLError) as exc:
+        raise HTTPException(502, "Não foi possível enviar a imagem para o Supabase.") from exc
+    return f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET}/{name}"
+
 def init_db() -> None:
     with db() as conn:
-        conn.executescript("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS content (
-                key TEXT PRIMARY KEY, value TEXT NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS cards (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                carousel TEXT NOT NULL CHECK(carousel IN ('schedule','restaurant')),
-                tag TEXT NOT NULL DEFAULT '', title TEXT NOT NULL, description TEXT NOT NULL DEFAULT '',
-                image_url TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0,
-                active INTEGER NOT NULL DEFAULT 1
-            );
-            CREATE TABLE IF NOT EXISTS tournament (
-                id INTEGER PRIMARY KEY CHECK(id=1), data TEXT NOT NULL
-            );
-        """)
-        conn.executemany("INSERT OR IGNORE INTO content(key,value) VALUES(?,?)", DEFAULT_CONTENT.items())
+        if using_postgres():
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+                    username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL
+                )
+            """)
+            conn.execute("CREATE TABLE IF NOT EXISTS content (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS cards (
+                    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+                    carousel TEXT NOT NULL CHECK(carousel IN ('schedule','restaurant')),
+                    tag TEXT NOT NULL DEFAULT '', title TEXT NOT NULL, description TEXT NOT NULL DEFAULT '',
+                    image_url TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0,
+                    active BOOLEAN NOT NULL DEFAULT TRUE
+                )
+            """)
+            conn.execute("CREATE TABLE IF NOT EXISTS tournament (id INTEGER PRIMARY KEY CHECK(id=1), data JSONB NOT NULL)")
+        else:
+            conn.connection.executescript("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS content (
+                    key TEXT PRIMARY KEY, value TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS cards (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    carousel TEXT NOT NULL CHECK(carousel IN ('schedule','restaurant')),
+                    tag TEXT NOT NULL DEFAULT '', title TEXT NOT NULL, description TEXT NOT NULL DEFAULT '',
+                    image_url TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0,
+                    active INTEGER NOT NULL DEFAULT 1
+                );
+                CREATE TABLE IF NOT EXISTS tournament (
+                    id INTEGER PRIMARY KEY CHECK(id=1), data TEXT NOT NULL
+                );
+            """)
+        content_insert = (
+            "INSERT INTO content(key,value) VALUES(?,?) ON CONFLICT(key) DO NOTHING"
+            if using_postgres()
+            else "INSERT OR IGNORE INTO content(key,value) VALUES(?,?)"
+        )
+        conn.executemany(content_insert, DEFAULT_CONTENT.items())
         username = os.getenv("ADMIN_USERNAME", "admin")
         password = os.getenv("ADMIN_PASSWORD")
         if password:
-            conn.execute("INSERT OR IGNORE INTO users(username,password_hash) VALUES(?,?)", (username, password_hash(password)))
-        count = conn.execute("SELECT COUNT(*) FROM cards").fetchone()[0]
+            user_insert = (
+                "INSERT INTO users(username,password_hash) VALUES(?,?) ON CONFLICT(username) DO NOTHING"
+                if using_postgres()
+                else "INSERT OR IGNORE INTO users(username,password_hash) VALUES(?,?)"
+            )
+            conn.execute(user_insert, (username, password_hash(password)))
+        count_row = conn.execute("SELECT COUNT(*) AS count FROM cards").fetchone()
+        count = count_row["count"] if using_postgres() else count_row[0]
         if not count:
             cards = [
                 ("schedule", "SEGUNDA", "Noite de Cash", "Mesas abertas a partir das 18h", "", 0),
@@ -147,7 +250,7 @@ def require_auth(session: str | None) -> None:
 def public_data(active_only: bool = True) -> dict:
     with db() as conn:
         content = {row["key"]: row["value"] for row in conn.execute("SELECT key,value FROM content")}
-        where = "WHERE active=1" if active_only else ""
+        where = "WHERE active=TRUE" if active_only else ""
         cards = [dict(row) for row in conn.execute(f"SELECT * FROM cards {where} ORDER BY carousel,position,id")]
     return {"content": content, "cards": cards}
 
@@ -281,7 +384,7 @@ def get_tournament(response: Response):
     response.headers["Cache-Control"] = "no-store"
     with db() as conn:
         row = conn.execute("SELECT data FROM tournament WHERE id=1").fetchone()
-    return tournament_snapshot(json.loads(row["data"]), time.time()) if row else {"status": "idle", "revision": 0, "server_time": time.time()}
+    return tournament_snapshot(decode_json(row["data"]), time.time()) if row else {"status": "idle", "revision": 0, "server_time": time.time()}
 
 
 @app.put("/api/admin/tournament")
@@ -292,7 +395,7 @@ def update_tournament(payload: TournamentInput, session: Annotated[str | None, C
     with db() as conn:
         conn.execute("BEGIN IMMEDIATE")
         row = conn.execute("SELECT data FROM tournament WHERE id=1").fetchone()
-        old = json.loads(row["data"]) if row else {"revision": 0, "remaining_seconds": 0}
+        old = decode_json(row["data"]) if row else {"revision": 0, "remaining_seconds": 0}
         if old.get("automation"):
             raise HTTPException(422, "Este torneio usa a estrutura automática. Atualize jogadores e avisos pelo painel automático.")
         if old["revision"] != payload.revision:
@@ -323,7 +426,7 @@ def start_automatic_tournament(payload: TournamentAutomationInput, session: Anno
     with db() as conn:
         conn.execute("BEGIN IMMEDIATE")
         row = conn.execute("SELECT data FROM tournament WHERE id=1").fetchone()
-        old = json.loads(row["data"]) if row else {"revision": 0}
+        old = decode_json(row["data"]) if row else {"revision": 0}
         if old["revision"] != payload.revision:
             raise HTTPException(409, "O torneio foi alterado em outra sessão. Recarregue os dados antes de iniciar.")
         data = {
@@ -361,7 +464,7 @@ def automatic_tournament_action(payload: TournamentAutomationAction, session: An
         row = conn.execute("SELECT data FROM tournament WHERE id=1").fetchone()
         if not row:
             raise HTTPException(404, "Nenhum torneio automático foi iniciado.")
-        data = json.loads(row["data"])
+        data = decode_json(row["data"])
         if not data.get("automation"):
             raise HTTPException(422, "Este torneio não usa a estrutura automática.")
         if data["revision"] != payload.revision:
@@ -398,7 +501,7 @@ def update_automatic_tournament_metrics(payload: TournamentMetricsInput, session
         row = conn.execute("SELECT data FROM tournament WHERE id=1").fetchone()
         if not row:
             raise HTTPException(404, "Nenhum torneio automático foi iniciado.")
-        data = json.loads(row["data"])
+        data = decode_json(row["data"])
         if not data.get("automation"):
             raise HTTPException(422, "Este torneio não usa a estrutura automática.")
         if data["revision"] != payload.revision:
@@ -467,8 +570,12 @@ def update_content(payload: ContentUpdate, session: Annotated[str | None, Cookie
 def create_card(card: CardInput, session: Annotated[str | None, Cookie()] = None):
     require_auth(session)
     with db() as conn:
-        cursor = conn.execute("INSERT INTO cards(carousel,tag,title,description,image_url,position,active) VALUES(?,?,?,?,?,?,?)", (card.carousel, card.tag, card.title, card.description, card.image_url, card.position, int(card.active)))
-        card_id = cursor.lastrowid
+        if using_postgres():
+            cursor = conn.execute("INSERT INTO cards(carousel,tag,title,description,image_url,position,active) VALUES(?,?,?,?,?,?,?) RETURNING id", (card.carousel, card.tag, card.title, card.description, card.image_url, card.position, card.active))
+            card_id = cursor.fetchone()["id"]
+        else:
+            cursor = conn.execute("INSERT INTO cards(carousel,tag,title,description,image_url,position,active) VALUES(?,?,?,?,?,?,?)", (card.carousel, card.tag, card.title, card.description, card.image_url, card.position, int(card.active)))
+            card_id = cursor.lastrowid
     return {"id": card_id}
 
 
@@ -476,7 +583,8 @@ def create_card(card: CardInput, session: Annotated[str | None, Cookie()] = None
 def update_card(card_id: int, card: CardInput, session: Annotated[str | None, Cookie()] = None):
     require_auth(session)
     with db() as conn:
-        result = conn.execute("UPDATE cards SET carousel=?,tag=?,title=?,description=?,image_url=?,position=?,active=? WHERE id=?", (card.carousel, card.tag, card.title, card.description, card.image_url, card.position, int(card.active), card_id))
+        active = card.active if using_postgres() else int(card.active)
+        result = conn.execute("UPDATE cards SET carousel=?,tag=?,title=?,description=?,image_url=?,position=?,active=? WHERE id=?", (card.carousel, card.tag, card.title, card.description, card.image_url, card.position, active, card_id))
     if not result.rowcount:
         raise HTTPException(404, "Card não encontrado")
     return {"ok": True}
@@ -501,6 +609,8 @@ async def upload_image(file: Annotated[UploadFile, File()], session: Annotated[s
     if len(contents) > 5 * 1024 * 1024:
         raise HTTPException(413, "A imagem deve ter no máximo 5 MB")
     name = f"{uuid.uuid4().hex}{allowed[file.content_type]}"
+    if using_postgres():
+        return {"url": upload_to_supabase(name, contents, file.content_type)}
     (UPLOAD_DIR / name).write_bytes(contents)
     return {"url": f"/uploads/{name}"}
 

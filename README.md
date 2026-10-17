@@ -32,6 +32,10 @@ export COOKIE_SECURE=1
 
 Os dados ficam em `data/bluechip.db` e as imagens enviadas em `uploads/`; inclua ambos no backup da aplicação.
 
+## Supabase
+
+Quando `DATABASE_URL` estiver definida, o backend usa PostgreSQL em vez do SQLite local. Para a publicação, configure também `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` e `SUPABASE_BUCKET=club-media`. A chave `service_role` deve ficar somente nas variáveis privadas do backend; nunca a publique no frontend ou no GitHub. O esquema inicial está em `supabase/schema.sql`.
+
 Para executar os testes após instalar as dependências:
 
 ```bash
