@@ -79,6 +79,9 @@ class DatabaseConnection:
     def executemany(self, query: str, params):
         if self.postgres:
             query = query.replace("?", "%s")
+            for item in params:
+                self.connection.execute(query, item)
+            return None
         return self.connection.executemany(query, params)
 
 
