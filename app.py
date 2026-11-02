@@ -401,12 +401,26 @@ def tournament_snapshot(data: dict, now: float) -> dict:
     return result
 
 
-@app.get("/api/tournament")
-def get_tournament(response: Response):
-    response.headers["Cache-Control"] = "no-store"
+def read_tournament_snapshot() -> dict:
     with db() as conn:
         row = conn.execute("SELECT data FROM tournament WHERE id=1").fetchone()
     return tournament_snapshot(decode_json(row["data"]), time.time()) if row else {"status": "idle", "revision": 0, "server_time": time.time()}
+
+
+@app.get("/api/tournament")
+def get_tournament(response: Response):
+    response.headers["Cache-Control"] = "no-store"
+    snapshot = read_tournament_snapshot()
+    if snapshot.get("status") == "ended":
+        return {"status": "idle", "revision": snapshot.get("revision", 0), "server_time": snapshot["server_time"]}
+    return snapshot
+
+
+@app.get("/api/admin/tournament")
+def get_admin_tournament(response: Response, session: Annotated[str | None, Cookie()] = None):
+    require_auth(session)
+    response.headers["Cache-Control"] = "no-store"
+    return read_tournament_snapshot()
 
 
 @app.put("/api/admin/tournament")

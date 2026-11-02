@@ -155,7 +155,7 @@
     reload.disabled = true;
     setControl(snapshot);
     try {
-      const data = await request("/api/tournament", { cache: "no-store" });
+      const data = await request("/api/admin/tournament", { cache: "no-store" });
       applySnapshot(data, data.revision ? undefined : "Nenhum torneio publicado. Você pode iniciar uma estrutura automática.");
     } catch (error) {
       status.textContent = error.message;

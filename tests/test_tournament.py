@@ -28,6 +28,20 @@ class TournamentTest(unittest.TestCase):
     def test_empty_is_not_a_live_tournament(self):
         self.assertEqual(app.get_tournament(Response())["status"], "idle")
 
+    def test_ended_tournament_is_hidden_from_public_view(self):
+        with app.db() as conn:
+            conn.execute("INSERT INTO tournament(id,data) VALUES(1,?)", (app.json.dumps({
+                "status": "ended", "revision": 3, "name": "Torneio encerrado",
+                "small_blind": 100, "big_blind": 200, "ante": 200,
+                "players": 0, "entries": 0,
+            }),))
+        public = app.get_tournament(Response())
+        self.assertEqual(public["status"], "idle")
+        self.assertNotIn("name", public)
+        admin = app.read_tournament_snapshot()
+        self.assertEqual(admin["status"], "ended")
+        self.assertEqual(admin["name"], "Torneio encerrado")
+
     def test_pause_resume_and_metadata_preserve_clock(self):
         with patch.object(app.time, "time", return_value=1000):
             self.publish(0, seconds=120)
