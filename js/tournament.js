@@ -4,6 +4,20 @@
   const labels = {running:"Em andamento",paused:"Pausado",break:"Intervalo",ended:"Encerrado"};
   let snapshot = null, received = 0, connected = false, busy = false;
   const set = (id, value) => { get(id).textContent = value; };
+  const clearBoard = () => {
+    set("tournamentName", "");
+    set("tournamentState", "");
+    set("tournamentClockLabel", "Tempo restante no nível");
+    set("tournamentClock", "00:00");
+    set("tournamentLevel", "");
+    set("tournamentNotice", "");
+    set("tournamentBlinds", "");
+    set("tournamentAnte", "");
+    set("tournamentPlayers", "");
+    set("tournamentAverage", "");
+    set("tournamentNote", "");
+    set("tournamentUpdated", "");
+  };
   function tick() {
     if (!snapshot || snapshot.status === "idle") return;
     const counting = ["running", "break"].includes(snapshot.status);
@@ -20,7 +34,17 @@
       snapshot = await response.json();
       received = performance.now();
       connected = true;
+      if (snapshot.status === "ended") {
+        snapshot = null;
+        clearBoard();
+        get("tournamentEmpty").hidden = false;
+        get("tournamentBoard").hidden = true;
+        get("tournamentRetry").hidden = true;
+        set("tournamentConnection", "Torneio encerrado. Aguardando próxima publicação.");
+        return;
+      }
       const idle = snapshot.status === "idle";
+      if (idle) clearBoard();
       get("tournamentEmpty").hidden = !idle;
       get("tournamentBoard").hidden = idle;
       get("tournamentRetry").hidden = true;
@@ -39,7 +63,11 @@
       }
     } catch {
       connected = false;
-      if (!snapshot) get("tournamentEmpty").hidden = true;
+      if (!snapshot) {
+        clearBoard();
+        get("tournamentEmpty").hidden = false;
+        get("tournamentBoard").hidden = true;
+      }
       set("tournamentConnection", "Conexão indisponível. Tentando novamente; os últimos dados podem estar desatualizados.");
       get("tournamentRetry").hidden = false;
     } finally { busy = false; tick(); }
