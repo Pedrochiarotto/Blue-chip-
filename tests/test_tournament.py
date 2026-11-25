@@ -109,3 +109,22 @@ class TournamentTest(unittest.TestCase):
         with patch.object(app.time, "time", return_value=4300):
             resumed = app.get_tournament(Response())
             self.assertEqual((resumed["status"], resumed["remaining_seconds"]), ("running", 600))
+
+    def test_long_running_automatic_tournament_caps_blinds(self):
+        data = {
+            "status": "running",
+            "automation": {
+                "started_at": 1000,
+                "elapsed_seconds": 0,
+                "level_duration_seconds": 60,
+                "small_blind": 100,
+                "big_blind": 200,
+                "blind_growth_mode": "multiplier",
+                "blind_growth_value": 2,
+                "ante_percent": 10,
+                "break_every_levels": 0,
+                "break_duration_seconds": 0,
+            },
+        }
+        snapshot = app.tournament_snapshot(data, 1000 + 60 * 10000)
+        self.assertEqual((snapshot["small_blind"], snapshot["big_blind"]), (1_000_000_000, 1_000_000_000))

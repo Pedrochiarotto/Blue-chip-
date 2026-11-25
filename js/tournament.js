@@ -15,6 +15,8 @@
     set("tournamentAnte", "");
     set("tournamentPlayers", "");
     set("tournamentAverage", "");
+    set("tournamentBreakTime", "—");
+    set("tournamentBreakCountdown", "—");
     set("tournamentNote", "");
     set("tournamentUpdated", "");
   };
@@ -23,6 +25,14 @@
     const counting = ["running", "break"].includes(snapshot.status);
     const remaining = Math.max(0, Math.ceil(snapshot.remaining_seconds - (counting ? (performance.now() - received) / 1000 : 0)));
     set("tournamentClock", connected ? `${String(Math.floor(remaining / 60)).padStart(2,"0")}:${String(remaining % 60).padStart(2,"0")}` : "—");
+    const breakRemaining = snapshot.break_in_seconds == null ? null : Math.max(0, Math.ceil(snapshot.break_in_seconds - (counting ? (performance.now() - received) / 1000 : 0)));
+    if (breakRemaining == null) {
+      set("tournamentBreakCountdown", "—");
+    } else {
+      const hours = Math.floor(breakRemaining / 3600);
+      const minutes = Math.floor((breakRemaining % 3600) / 60);
+      set("tournamentBreakCountdown", hours ? `${hours}h ${String(minutes).padStart(2, "0")}min` : `${minutes} min`);
+    }
     set("tournamentNotice", !connected ? "Reconectando para confirmar o tempo." : snapshot.status === "ended" ? "Torneio encerrado pela organização." : snapshot.status === "paused" ? "Relógio pausado pela organização." : remaining === 0 ? "Tempo esgotado. Aguardando atualização da organização." : snapshot.status === "break" ? "Os jogadores estão em intervalo." : "Acompanhe as informações da mesa de organização.");
   }
   async function sync() {
@@ -57,7 +67,10 @@
         set("tournamentBlinds", `${number.format(snapshot.small_blind)} / ${number.format(snapshot.big_blind)}`);
         set("tournamentAnte", number.format(snapshot.ante));
         set("tournamentPlayers", `${number.format(snapshot.players)} / ${number.format(snapshot.entries)}`);
-        set("tournamentAverage", snapshot.average_stack ? number.format(snapshot.average_stack) : "Não informado");
+    set("tournamentAverage", snapshot.average_stack ? number.format(snapshot.average_stack) : "Não informado");
+        const breakTime = snapshot.break_time || (snapshot.break_at ? new Date(snapshot.break_at * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "—");
+        set("tournamentBreakTime", breakTime);
+        set("tournamentBreakCountdown", snapshot.minutes_until_break == null ? "—" : "calculando…");
         set("tournamentNote", snapshot.note);
         set("tournamentUpdated", `Publicado pela organização em ${new Date(snapshot.updated_at * 1000).toLocaleString("pt-BR")}`);
       }

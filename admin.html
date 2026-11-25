@@ -72,6 +72,8 @@
               <label><span id="blindGrowthLabel">Multiplicador por nível</span><input name="blind_growth_value" type="number" min="1" max="1000000000" value="2" step="0.1" required></label>
               <label>Intervalo a cada quantos níveis?<input name="break_every_levels" type="number" min="0" max="100" value="4" required></label>
               <label>Duração do intervalo (minutos)<input name="break_duration_minutes" type="number" min="0" max="120" value="15" required></label>
+              <label>Horário do intervalo<input name="break_time" type="time" aria-describedby="breakTimeHint"><small id="breakTimeHint">Opcional: horário exibido no Live Center.</small></label>
+              <label>Minutos até o intervalo<input name="minutes_until_break" type="number" min="0" max="10080" placeholder="Automático"><small>O público verá o valor em horas e minutos.</small></label>
             </div>
             <div class="structure-preview" aria-live="polite">
               <div class="structure-preview__head"><h4>Prévia da estrutura</h4><span id="previewSummary"></span></div>
@@ -102,6 +104,8 @@
             <label>Jogadores restantes<input name="players" type="number" min="0" max="1000000" value="0" required></label>
             <label>Entradas totais (incluindo reentradas)<input name="entries" type="number" min="0" max="1000000" value="0" required></label>
             <label>Stack médio<input name="average_stack" type="number" min="0" max="1000000000" value="0" required></label>
+            <label>Horário do intervalo<input name="break_time" type="time"></label>
+            <label>Minutos até o intervalo<input name="minutes_until_break" type="number" min="0" max="10080" placeholder="Automático"><small>Atualiza a contagem regressiva do próximo intervalo.</small></label>
             <label class="wide">Aviso da organização<textarea name="note" maxlength="300" rows="3"></textarea></label>
           </div>
           <div class="form-actions"><button type="submit">Publicar dados da mesa</button></div>

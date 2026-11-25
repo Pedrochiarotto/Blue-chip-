@@ -22,7 +22,26 @@ from pydantic import BaseModel, Field, field_validator
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 UPLOAD_DIR = BASE_DIR / "uploads"
-DB_PATH = DATA_DIR / "bluechip.db"
+# Optional override helps local environments where synced folders block SQLite locks.
+DB_PATH = Path(os.getenv("BLUECHIP_DB_PATH", DATA_DIR / "bluechip.db"))
+
+
+def load_local_env() -> None:
+    """Load simple KEY=VALUE entries for local runs without overriding Render env."""
+    env_file = BASE_DIR / ".env"
+    if not env_file.exists():
+        return
+    for raw_line in env_file.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key, value = key.strip(), value.strip().strip("\"'")
+        if key:
+            os.environ.setdefault(key, value)
+
+
+load_local_env()
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
@@ -87,7 +106,10 @@ class DatabaseConnection:
 
 
 def using_postgres() -> bool:
-    return bool(DATABASE_URL)
+    # Keep local development usable when .env still contains the template URL.
+    # A real Supabase URL never contains bracketed setup placeholders.
+    placeholders = ("[project-ref]", "[senha]", "[regiao]", "[YOUR-PASSWORD]")
+    return bool(DATABASE_URL) and not any(item in DATABASE_URL for item in placeholders)
 
 
 def db() -> DatabaseConnection:
@@ -200,9 +222,9 @@ def init_db() -> None:
         password = os.getenv("ADMIN_PASSWORD")
         if password:
             user_insert = (
-                "INSERT INTO users(username,password_hash) VALUES(?,?) ON CONFLICT(username) DO NOTHING"
+                "INSERT INTO users(username,password_hash) VALUES(?,?) ON CONFLICT(username) DO UPDATE SET password_hash=excluded.password_hash"
                 if using_postgres()
-                else "INSERT OR IGNORE INTO users(username,password_hash) VALUES(?,?)"
+                else "INSERT INTO users(username,password_hash) VALUES(?,?) ON CONFLICT(username) DO UPDATE SET password_hash=excluded.password_hash"
             )
             conn.execute(user_insert, (username, password_hash(password)))
         count_row = conn.execute("SELECT COUNT(*) AS count FROM cards").fetchone()
@@ -317,6 +339,8 @@ class TournamentAutomationInput(BaseModel):
     ante_percent: float = Field(0, ge=0, le=100)
     break_every_levels: int = Field(0, ge=0, le=100)
     break_duration_minutes: int = Field(0, ge=0, le=120)
+    break_time: str = Field("", max_length=5)
+    minutes_until_break: int | None = Field(None, ge=0, le=10080)
     players: int = Field(0, ge=0, le=1000000)
     entries: int = Field(0, ge=0, le=1000000)
     average_stack: int = Field(0, ge=0, le=1000000000)
@@ -334,6 +358,8 @@ class TournamentMetricsInput(BaseModel):
     entries: int = Field(0, ge=0, le=1000000)
     average_stack: int = Field(0, ge=0, le=1000000000)
     note: str = Field("", max_length=300)
+    break_time: str = Field("", max_length=5)
+    minutes_until_break: int | None = Field(None, ge=0, le=10080)
 
 
 def automation_elapsed(data: dict, now: float) -> float:
@@ -351,6 +377,7 @@ def automatic_tournament_state(data: dict, now: float) -> dict:
     levels_before_break = int(automation.get("break_every_levels", 0))
     break_seconds = int(automation.get("break_duration_seconds", 0))
     on_break = False
+    structural_break_seconds = None
 
     if levels_before_break and break_seconds:
         cycle_seconds = levels_before_break * level_seconds + break_seconds
@@ -363,19 +390,33 @@ def automatic_tournament_state(data: dict, now: float) -> dict:
         else:
             level = completed_cycles * levels_before_break + cycle_position // level_seconds + 1
             remaining = level_seconds - cycle_position % level_seconds
+        structural_break_seconds = max(0, running_seconds - cycle_position)
     else:
         level = int(elapsed) // level_seconds + 1
         remaining = level_seconds - int(elapsed) % level_seconds
 
+    manual_minutes = automation.get("minutes_until_break")
+    if manual_minutes is not None:
+        anchor = float(automation.get("minutes_until_break_anchor_elapsed", 0))
+        break_in_seconds = max(0, int(manual_minutes) * 60 - max(0, elapsed - anchor))
+    else:
+        break_in_seconds = structural_break_seconds
+
     step = max(0, level - 1)
     if automation["blind_growth_mode"] == "multiplier":
-        factor = float(automation["blind_growth_value"]) ** step
-        small_blind = round(int(automation["small_blind"]) * factor)
-        big_blind = round(int(automation["big_blind"]) * factor)
+        growth = float(automation["blind_growth_value"])
+        try:
+            factor = growth ** step
+            small_blind = min(1_000_000_000, round(int(automation["small_blind"]) * factor))
+            big_blind = min(1_000_000_000, round(int(automation["big_blind"]) * factor))
+        except (OverflowError, ValueError):
+            # A long-running tournament can exceed the input limit after many
+            # levels. Keep the API usable and cap the displayed blinds safely.
+            small_blind = big_blind = 1_000_000_000
     else:
         increment = float(automation["blind_growth_value"]) * step
-        small_blind = round(int(automation["small_blind"]) + increment)
-        big_blind = round(int(automation["big_blind"]) + increment)
+        small_blind = min(1_000_000_000, round(int(automation["small_blind"]) + increment))
+        big_blind = min(1_000_000_000, round(int(automation["big_blind"]) + increment))
 
     ante = round(big_blind * float(automation.get("ante_percent", 0)) / 100)
     return {
@@ -386,6 +427,11 @@ def automatic_tournament_state(data: dict, now: float) -> dict:
         "remaining_seconds": remaining,
         "status": "break" if on_break else data.get("status", "running"),
         "automation_elapsed_seconds": elapsed,
+        "break_time": automation.get("break_time", ""),
+        "configured_minutes_until_break": automation.get("minutes_until_break"),
+        "minutes_until_break": None if break_in_seconds is None else max(0, int((break_in_seconds + 59) // 60)),
+        "break_in_seconds": break_in_seconds,
+        "break_at": None if break_in_seconds is None else now + break_in_seconds,
     }
 
 
@@ -458,6 +504,8 @@ def start_automatic_tournament(payload: TournamentAutomationInput, session: Anno
         raise HTTPException(422, "O multiplicador das blinds deve ser igual ou maior que 1.")
     if payload.break_every_levels == 0 and payload.break_duration_minutes:
         raise HTTPException(422, "Defina a frequência do intervalo ou deixe a duração do intervalo em zero.")
+    if payload.break_time and (len(payload.break_time) != 5 or payload.break_time[2] != ":"):
+        raise HTTPException(422, "Informe o horário do intervalo no formato HH:MM.")
     now = time.time()
     with db() as conn:
         conn.execute("BEGIN IMMEDIATE")
@@ -485,6 +533,9 @@ def start_automatic_tournament(payload: TournamentAutomationInput, session: Anno
                 "ante_percent": payload.ante_percent,
                 "break_every_levels": payload.break_every_levels,
                 "break_duration_seconds": payload.break_duration_minutes * 60,
+                "break_time": payload.break_time,
+                "minutes_until_break": payload.minutes_until_break,
+                "minutes_until_break_anchor_elapsed": 0,
             },
         }
         conn.execute("INSERT INTO tournament(id,data) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data", (json.dumps(data),))
@@ -542,6 +593,11 @@ def update_automatic_tournament_metrics(payload: TournamentMetricsInput, session
             raise HTTPException(422, "Este torneio não usa a estrutura automática.")
         if data["revision"] != payload.revision:
             raise HTTPException(409, "O torneio foi alterado em outra sessão. Recarregue os dados antes de salvar.")
+        if payload.break_time and (len(payload.break_time) != 5 or payload.break_time[2] != ":"):
+            raise HTTPException(422, "Informe o horário do intervalo no formato HH:MM.")
+        data["automation"]["minutes_until_break_anchor_elapsed"] = automation_elapsed(data, now)
+        data["automation"]["minutes_until_break"] = payload.minutes_until_break
+        data["automation"]["break_time"] = payload.break_time
         data.update(players=payload.players, entries=payload.entries, average_stack=payload.average_stack, note=payload.note,
                     revision=data["revision"] + 1, updated_at=now)
         conn.execute("UPDATE tournament SET data=? WHERE id=1", (json.dumps(data),))
@@ -569,12 +625,15 @@ def health():
 
 
 @app.post("/api/login")
-def login(response: Response, username: Annotated[str, Form()], password: Annotated[str, Form()]):
+def login(request: Request, response: Response, username: Annotated[str, Form()], password: Annotated[str, Form()]):
     with db() as conn:
         user = conn.execute("SELECT * FROM users WHERE username=?", (username.strip(),)).fetchone()
     if not user or not verify_password(password, user["password_hash"]):
         raise HTTPException(401, "Usuário ou senha incorretos")
-    response.set_cookie("session", make_session(user["username"]), httponly=True, samesite="strict", secure=os.getenv("COOKIE_SECURE") == "1", max_age=SESSION_TTL)
+    # Cookies must be secure in production, while local HTTP development needs
+    # a regular cookie so the browser can retain the session after login.
+    secure_cookie = request.url.scheme == "https" and os.getenv("COOKIE_SECURE", "1") != "0"
+    response.set_cookie("session", make_session(user["username"]), httponly=True, samesite="strict", secure=secure_cookie, max_age=SESSION_TTL)
     return {"ok": True}
 
 

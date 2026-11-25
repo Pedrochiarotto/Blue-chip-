@@ -28,6 +28,7 @@
   let busy = false;
 
   const value = (form, name) => Number(form.elements[name].value || 0);
+  const optionalValue = (form, name) => form.elements[name].value === "" ? null : Number(form.elements[name].value);
   const clock = (seconds) => `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 
   function updateGrowthLabel() {
@@ -115,12 +116,15 @@
     setupForm.elements.ante_percent.value = automation.ante_percent;
     setupForm.elements.break_every_levels.value = automation.break_every_levels;
     setupForm.elements.break_duration_minutes.value = Math.round(automation.break_duration_seconds / 60);
+    setupForm.elements.break_time.value = automation.break_time || "";
+    setupForm.elements.minutes_until_break.value = automation.minutes_until_break ?? "";
   }
 
   function fillMetrics(data) {
-    ["players", "entries", "average_stack", "note"].forEach((key) => {
+    ["players", "entries", "average_stack", "note", "break_time"].forEach((key) => {
       if (data[key] != null) metricsForm.elements[key].value = data[key];
     });
+    metricsForm.elements.minutes_until_break.value = data.configured_minutes_until_break ?? "";
   }
 
   function applySnapshot(data, message) {
@@ -195,6 +199,8 @@
     decimalFields.forEach((key) => { payload[key] = value(setupForm, key); });
     metrics.forEach((key) => { payload[key] = value(metricsForm, key); });
     payload.note = metricsForm.elements.note.value;
+    payload.break_time = setupForm.elements.break_time.value;
+    payload.minutes_until_break = optionalValue(setupForm, "minutes_until_break");
     withRequest("/api/admin/tournament/automation", { method: "PUT", body: JSON.stringify(payload) }, "Torneio automático iniciado. O nível 1 já está em contagem.");
   });
 
@@ -202,6 +208,8 @@
     event.preventDefault();
     const payload = { revision, note: metricsForm.elements.note.value };
     metrics.forEach((key) => { payload[key] = value(metricsForm, key); });
+    payload.break_time = metricsForm.elements.break_time.value;
+    payload.minutes_until_break = optionalValue(metricsForm, "minutes_until_break");
     withRequest("/api/admin/tournament/automation/metrics", { method: "PUT", body: JSON.stringify(payload) }, "Dados da mesa publicados. A estrutura segue automática.");
   });
 
